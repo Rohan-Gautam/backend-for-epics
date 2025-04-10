@@ -63,6 +63,11 @@ app.get('/home', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'home.html'));
 });
 
+//for buyer
+
+app.get('/buyer', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'buyer.html'));
+});
 
 app.post('/api/register', registerUser);
 app.post('/api/login', loginUser);

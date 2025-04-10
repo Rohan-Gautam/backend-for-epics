@@ -1,614 +1,399 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Land Listings</title>
-    <style>
-        /* Reset and base styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            color: #333;
-            line-height: 1.6;
-        }
-        
-        header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 1rem 0;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        
-        h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        /* Search and Filter Section */
-        .search-filter-container {
-            background-color: white;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .search-box {
-            display: flex;
-            margin-bottom: 20px;
-        }
-        
-        .search-box input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px 0 0 4px;
-            font-size: 1rem;
-        }
-        
-        .search-box button {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 0 20px;
-            cursor: pointer;
-            border-radius: 0 4px 4px 0;
-            transition: background-color 0.3s;
-        }
-        
-        .search-box button:hover {
-            background-color: #2980b9;
-        }
-        
-        .filters {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-        
-        .filter-group {
-            margin-bottom: 15px;
-        }
-        
-        .filter-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #555;
-        }
-        
-        .filter-group select, 
-        .filter-group input {
-            width: 100%;
-            padding: 8px 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 0.9rem;
-        }
-        
-        .filter-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 15px;
-            gap: 10px;
-        }
-        
-        .filter-actions button {
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-        
-        .btn-apply {
-            background-color: #27ae60;
-            color: white;
-            border: none;
-        }
-        
-        .btn-apply:hover {
-            background-color: #219653;
-        }
-        
-        .btn-reset {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-        }
-        
-        .btn-reset:hover {
-            background-color: #c0392b;
-        }
-        
-        /* Lands Grid */
-        .lands-container {
-            padding: 20px 0;
-        }
-        
-        .lands-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-        }
-        
-        .land-card {
-            background-color: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }
-        
-        .land-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .land-image {
-            height: 200px;
-            overflow: hidden;
-        }
-        
-        .land-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
-        }
-        
-        .land-card:hover .land-image img {
-            transform: scale(1.05);
-        }
-        
-        .land-details {
-            padding: 15px;
-        }
-        
-        .land-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: #2c3e50;
-        }
-        
-        .land-location {
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-            color: #555;
-        }
-        
-        .land-location::before {
-            content: "📍";
-            margin-right: 5px;
-            font-size: 1rem;
-        }
-        
-        .land-price {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #27ae60;
-            margin-bottom: 8px;
-        }
-        
-        .land-meta {
-            display: flex;
-            justify-content: space-between;
-            color: #7f8c8d;
-            font-size: 0.9rem;
-        }
-        
-        .land-type {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-top: 8px;
-            text-transform: uppercase;
-        }
-        
-        .type-agricultural {
-            background-color: #e1f5fe;
-            color: #0277bd;
-        }
-        
-        .type-residential {
-            background-color: #e8f5e9;
-            color: #2e7d32;
-        }
-        
-        .type-commercial {
-            background-color: #fff8e1;
-            color: #ff8f00;
-        }
-        
-        .type-industrial {
-            background-color: #f3e5f5;
-            color: #7b1fa2;
-        }
-        
-        .type-mixed-use {
-            background-color: #e0f2f1;
-            color: #00796b;
-        }
-        
-        /* Loading and Message States */
-        .loading-container, 
-        .no-results {
-            text-align: center;
-            padding: 50px 0;
-            color: #7f8c8d;
-        }
-        
-        .loading-container {
-            display: none;
-        }
-        
-        .spinner {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(189, 189, 189, 0.25);
-            border-left-color: #3498db;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .filters {
-                grid-template-columns: 1fr;
-            }
-            
-            .lands-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .search-box {
-                flex-direction: column;
-            }
-            
-            .search-box input {
-                border-radius: 4px;
-                margin-bottom: 10px;
-            }
-            
-            .search-box button {
-                width: 100%;
-                border-radius: 4px;
-                padding: 10px;
-            }
-            
-            .lands-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Land Search Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .autocomplete-items {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      border-bottom: none;
+      border-top: none;
+      z-index: 99;
+      top: 100%;
+      left: 0;
+      right: 0;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #fff;
+      border-bottom: 1px solid #d4d4d4;
+    }
+    .autocomplete-items div:hover {
+      background-color: #e9e9e9;
+    }
+    .autocomplete-active {
+      background-color: #e9f7fe !important;
+    }
+    .autocomplete {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+    .range-slider {
+      width: 100%;
+    }
+    .range-value {
+      display: inline-block;
+      position: relative;
+      width: 100%;
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
 </head>
-<body>
-    <header>
-        <div class="container">
-            <h1>Premium Land Listings</h1>
-            <p>Find your perfect property for investment or development</p>
-        </div>
+<body class="bg-gray-100 min-h-screen">
+  <div class="container mx-auto px-4 py-8">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold text-green-700 mb-2">Land Search Portal</h1>
+      <p class="text-gray-600">Find your perfect land property</p>
     </header>
 
-    <main class="container">
-        <section class="search-filter-container">
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Search by name, location, or type...">
-                <button id="searchButton">Search</button>
-            </div>
-            
-            <div class="filters">
-                <div class="filter-group">
-                    <label for="locationFilter">Location</label>
-                    <select id="locationFilter">
-                        <option value="">All Locations</option>
-                        <!-- Locations will be populated dynamically -->
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="typeFilter">Land Type</label>
-                    <select id="typeFilter">
-                        <option value="">All Types</option>
-                        <!-- Types will be populated dynamically -->
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="priceRange">Price Range (₹)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="number" id="minPrice" placeholder="Min">
-                        <input type="number" id="maxPrice" placeholder="Max">
-                    </div>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="sizeRange">Size Range (acres)</label>
-                    <div style="display: flex; gap: 10px;">
-                        <input type="number" id="minSize" placeholder="Min" step="0.1">
-                        <input type="number" id="maxSize" placeholder="Max" step="0.1">
-                    </div>
-                </div>
-            </div>
-            
-            <div class="filter-actions">
-                <button class="btn-reset" id="resetFilters">Reset Filters</button>
-                <button class="btn-apply" id="applyFilters">Apply Filters</button>
-            </div>
-        </section>
-        
-        <section class="lands-container">
-            <div class="loading-container" id="loadingContainer">
-                <div class="spinner"></div>
-                <p>Loading properties...</p>
-            </div>
-            
-            <div class="no-results" id="noResults" style="display: none;">
-                <p>No properties found matching your criteria.</p>
-                <p>Try adjusting your filters or search term.</p>
-            </div>
-            
-            <div class="lands-grid" id="landsGrid">
-                <!-- Land cards will be populated here dynamically -->
-            </div>
-        </section>
-    </main>
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+      <form id="searchForm" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="autocomplete">
+            <label for="location" class="block text-gray-700 font-medium mb-2">Location</label>
+            <input type="text" id="location" name="location" placeholder="Enter city, state, or zip code" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+          </div>
+          
+          <div>
+            <label for="landType" class="block text-gray-700 font-medium mb-2">Land Type</label>
+            <select id="landType" name="landType" 
+              class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">All Land Types</option>
+              <option value="Residential">Residential</option>
+              <option value="Commercial">Commercial</option>
+              <option value="Agricultural">Agricultural</option>
+              <option value="Recreational">Recreational</option>
+              <option value="Industrial">Industrial</option>
+            </select>
+          </div>
+        </div>
 
-    <script>
-        // API Base URL - Change this to match your backend URL if needed
-        const API_BASE_URL = 'http://localhost:3000';
-        
-        // DOM Elements
-        const searchInput = document.getElementById('searchInput');
-        const searchButton = document.getElementById('searchButton');
-        const locationFilter = document.getElementById('locationFilter');
-        const typeFilter = document.getElementById('typeFilter');
-        const minPriceInput = document.getElementById('minPrice');
-        const maxPriceInput = document.getElementById('maxPrice');
-        const minSizeInput = document.getElementById('minSize');
-        const maxSizeInput = document.getElementById('maxSize');
-        const resetFiltersButton = document.getElementById('resetFilters');
-        const applyFiltersButton = document.getElementById('applyFilters');
-        const landsGrid = document.getElementById('landsGrid');
-        const loadingContainer = document.getElementById('loadingContainer');
-        const noResultsContainer = document.getElementById('noResults');
-        
-        // State variables
-        let allLands = [];
-        let locations = new Set();
-        let landTypes = new Set();
-        let currentFilters = {
-            q: '',
-            location: '',
-            type: '',
-            minPrice: '',
-            maxPrice: '',
-            minSize: '',
-            maxSize: ''
-        };
-        
-        // Initialize app
-        document.addEventListener('DOMContentLoaded', initialize);
-        
-        function initialize() {
-            // Add event listeners
-            searchButton.addEventListener('click', handleSearch);
-            searchInput.addEventListener('keyup', e => {
-                if (e.key === 'Enter') handleSearch();
-            });
-            applyFiltersButton.addEventListener('click', applyFilters);
-            resetFiltersButton.addEventListener('click', resetFilters);
-            
-            // Load initial data
-            fetchLands();
-        }
-        
-        // Fetch all lands
-        async function fetchLands(filters = {}) {
-            showLoading(true);
-            
-            try {
-                // Build query string from filters
-                const queryParams = new URLSearchParams();
-                Object.entries(filters).forEach(([key, value]) => {
-                    if (value) queryParams.append(key, value);
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label for="priceRange" class="block text-gray-700 font-medium mb-4">Price Range ($)</label>
+            <div class="flex items-center space-x-4">
+              <input type="number" id="minPrice" min="0" placeholder="Min" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <span class="text-gray-500">to</span>
+              <input type="number" id="maxPrice" min="0" placeholder="Max" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mt-4">
+              <input type="range" min="0" max="1000000" value="500000" class="range-slider" id="priceSlider">
+              <div class="range-value">$<span id="priceValue">500,000</span></div>
+            </div>
+          </div>
+
+          <div>
+            <label for="sizeRange" class="block text-gray-700 font-medium mb-4">Size Range (acres)</label>
+            <div class="flex items-center space-x-4">
+              <input type="number" id="minSize" min="0" step="0.1" placeholder="Min" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <span class="text-gray-500">to</span>
+              <input type="number" id="maxSize" min="0" step="0.1" placeholder="Max" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="mt-4">
+              <input type="range" min="0" max="100" value="50" class="range-slider" id="sizeSlider">
+              <div class="range-value"><span id="sizeValue">50</span> acres</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-center pt-4">
+          <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
+            Search Lands
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="mb-4">
+      <h2 class="text-xl font-semibold text-gray-800" id="resultsCount">0 lands found</h2>
+    </div>
+
+    <div id="searchResults" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Results will be populated here -->
+    </div>
+
+    <div id="noResults" class="hidden text-center py-8">
+      <p class="text-xl text-gray-600">No lands match your search criteria. Try adjusting your filters.</p>
+    </div>
+  </div>
+
+  <script>
+        let landsData;
+      
+        document.addEventListener('DOMContentLoaded', function() {
+          fetch('../data/lands.json')
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Network response was not ok');
+              }
+              return response.json();
+            })
+            .then(data => {
+              landsData = data;
+      
+              // Initialize form elements
+              const searchForm = document.getElementById('searchForm');
+              const locationInput = document.getElementById('location');
+              const landTypeSelect = document.getElementById('landType');
+              const minPriceInput = document.getElementById('minPrice');
+              const maxPriceInput = document.getElementById('maxPrice');
+              const minSizeInput = document.getElementById('minSize');
+              const maxSizeInput = document.getElementById('maxSize');
+              const priceSlider = document.getElementById('priceSlider');
+              const priceValue = document.getElementById('priceValue');
+              const sizeSlider = document.getElementById('sizeSlider');
+              const sizeValue = document.getElementById('sizeValue');
+              const searchResults = document.getElementById('searchResults');
+              const noResults = document.getElementById('noResults');
+              const resultsCount = document.getElementById('resultsCount');
+      
+              // Initialize with all data displayed
+              displayLands(landsData);
+      
+              // Set up autocomplete for location
+              setupAutocomplete(locationInput, getUniqueLocations());
+      
+              // Set up price slider
+              priceSlider.addEventListener('input', function() {
+                const value = parseInt(this.value).toLocaleString();
+                priceValue.textContent = value;
+                maxPriceInput.value = this.value;
+      
+                // Ensure min price doesn't exceed max price
+                if (minPriceInput.value && parseInt(minPriceInput.value) > parseInt(this.value)) {
+                  minPriceInput.value = this.value;
+                }
+              });
+      
+              // Set up size slider
+              sizeSlider.addEventListener('input', function() {
+                const value = parseFloat(this.value);
+                sizeValue.textContent = value;
+                maxSizeInput.value = value;
+      
+                // Ensure min size doesn't exceed max size
+                if (minSizeInput.value && parseFloat(minSizeInput.value) > value) {
+                  minSizeInput.value = value;
+                }
+              });
+      
+              // Handle min/max price inputs
+              minPriceInput.addEventListener(' onchange', function() {
+                if (maxPriceInput.value && parseInt(this.value) > parseInt(maxPriceInput.value)) {
+                  maxPriceInput.value = this.value;
+                  priceSlider.value = this.value;
+                  priceValue.textContent = parseInt(this.value).toLocaleString();
+                }
+              });
+      
+              maxPriceInput.addEventListener('change', function() {
+                if (parseInt(this.value) > parseInt(priceSlider.max)) {
+                  this.value = priceSlider.max;
+                }
+                priceSlider.value = this.value;
+                priceValue.textContent = parseInt(this.value).toLocaleString();
+      
+                if (minPriceInput.value && parseInt(minPriceInput.value) > parseInt(this.value)) {
+                  minPriceInput.value = this.value;
+                }
+              });
+      
+              // Handle min/max size inputs
+              minSizeInput.addEventListener('change', function() {
+                if (maxSizeInput.value && parseFloat(this.value) > parseFloat(maxSizeInput.value)) {
+                  maxSizeInput.value = this.value;
+                  sizeSlider.value = this.value;
+                  sizeValue.textContent = this.value;
+                }
+              });
+      
+              maxSizeInput.addEventListener('change', function() {
+                if (parseFloat(this.value) > parseFloat(sizeSlider.max)) {
+                  this.value = sizeSlider.max;
+                }
+                sizeSlider.value = this.value;
+                sizeValue.textContent = this.value;
+      
+                if (minSizeInput.value && parseFloat(minSizeInput.value) > parseFloat(this.value)) {
+                  minSizeInput.value = this.value;
+                }
+              });
+      
+              // Handle form submission
+              searchForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+      
+                const location = locationInput.value.trim();
+                const landType = landTypeSelect.value;
+                const minPrice = minPriceInput.value ? parseInt(minPriceInput.value) : 0;
+                const maxPrice = maxPriceInput.value ? parseInt(maxPriceInput.value) : Number.MAX_SAFE_INTEGER;
+                const minSize = minSizeInput.value ? parseFloat(minSizeInput.value) : 0;
+                const maxSize = maxSizeInput.value ? parseFloat(maxSizeInput.value) : Number.MAX_SAFE_INTEGER;
+      
+                const filteredLands = landsData.filter(land => {
+                  const locationMatch = !location || land.location.toLowerCase().includes(location.toLowerCase());
+                  const typeMatch = !landType || land.landType === landType;
+                  const priceMatch = land.price >= minPrice && land.price <= maxPrice;
+                  const sizeMatch = land.size >= minSize && land.size <= maxSize;
+      
+                  return locationMatch && typeMatch && priceMatch && sizeMatch;
                 });
-                
-                const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
-                const response = await fetch(`${API_BASE_URL}/api/lands${queryString}`);
-                
-                if (!response.ok) {
-                    throw new Error('Failed to fetch lands');
-                }
-                
-                const data = await response.json();
-                allLands = data;
-                
-                // If it's the initial load, populate filter options
-                if (Object.keys(filters).length === 0 || 
-                    (Object.keys(filters).length === 1 && filters.q)) {
-                    populateFilterOptions(data);
-                }
-                
-                // Render lands
-                renderLands(data);
-            } catch (error) {
-                console.error('Error fetching lands:', error);
-                showErrorMessage('Failed to load properties. Please try again later.');
-            } finally {
-                showLoading(false);
+      
+                displayLands(filteredLands);
+              });
+            })
+            .catch(error => {
+              console.error('Error loading lands data:', error);
+              const searchResults = document.getElementById('searchResults');
+              searchResults.innerHTML = '<p class="text-red-500">Failed to load land data. Please try again later.</p>';
+            });
+        });
+      
+        // Helper function to get unique locations
+        function getUniqueLocations() {
+          if (!landsData) return [];
+          const locations = landsData.map(land => land.location);
+          return [...new Set(locations)];
+        }
+      
+        // Function to set up autocomplete
+        function setupAutocomplete(input, items) {
+          let currentFocus;
+      
+          input.addEventListener("input", function() {
+            closeAllLists();
+            if (!this.value) return false;
+            currentFocus = -1;
+      
+            const autocompleteSuggestions = document.createElement("div");
+            autocompleteSuggestions.setAttribute("id", this.id + "autocomplete-list");
+            autocompleteSuggestions.setAttribute("class", "autocomplete-items");
+            this.parentNode.appendChild(autocompleteSuggestions);
+      
+            const inputVal = this.value.toLowerCase();
+      
+            for (let i = 0; i < items.length; i++) {
+              if (items[i].toLowerCase().includes(inputVal)) {
+                const suggestion = document.createElement("div");
+      
+                // Highlight the matching part of the suggestion
+                const matchIndex = items[i].toLowerCase().indexOf(inputVal);
+                suggestion.innerHTML = items[i].substr(0, matchIndex);
+                suggestion.innerHTML += "<strong>" + items[i].substr(matchIndex, inputVal.length) + "</strong>";
+                suggestion.innerHTML += items[i].substr(matchIndex + inputVal.length);
+      
+                suggestion.innerHTML += "<input type='hidden' value='" + items[i] + "'>";
+      
+                suggestion.addEventListener("click", function() {
+                  input.value = this.getElementsByTagName("input")[0].value;
+                  closeAllLists();
+                });
+      
+                autocompleteSuggestions.appendChild(suggestion);
+              }
             }
-        }
-        
-        // Populate filter dropdowns with available options
-        function populateFilterOptions(lands) {
-            // Clear existing options except the default one
-            locationFilter.innerHTML = '<option value="">All Locations</option>';
-            typeFilter.innerHTML = '<option value="">All Types</option>';
-            
-            // Extract unique locations and land types
-            locations = new Set();
-            landTypes = new Set();
-            
-            lands.forEach(land => {
-                locations.add(land.location);
-                landTypes.add(land.type);
-            });
-            
-            // Add options to selects
-            locations.forEach(location => {
-                const option = document.createElement('option');
-                option.value = location;
-                option.textContent = location;
-                locationFilter.appendChild(option);
-            });
-            
-            landTypes.forEach(type => {
-                const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                typeFilter.appendChild(option);
-            });
-        }
-        
-        // Render lands in the grid
-        function renderLands(lands) {
-            // Clear previous content
-            landsGrid.innerHTML = '';
-            
-            // Show no results message if no lands
-            if (lands.length === 0) {
-                noResultsContainer.style.display = 'block';
-                return;
+          });
+      
+          input.addEventListener("keydown", function(e) {
+            let suggestions = document.getElementById(this.id + "autocomplete-list");
+            if (suggestions) suggestions = suggestions.getElementsByTagName("div");
+      
+            if (e.key === "ArrowDown") {
+              currentFocus++;
+              addActive(suggestions);
+            } else if (e.key === "ArrowUp") {
+              currentFocus--;
+              addActive(suggestions);
+            } else if (e.key === "Enter") {
+              e.preventDefault();
+              if (currentFocus > -1 && suggestions) suggestions[currentFocus].click();
             }
-            
-            noResultsContainer.style.display = 'none';
-            
-            // Create and append land cards
+          });
+      
+          function addActive(suggestions) {
+            if (!suggestions) return false;
+            removeActive(suggestions);
+            if (currentFocus >= suggestions.length) currentFocus = 0;
+            if (currentFocus < 0) currentFocus = (suggestions.length - 1);
+            suggestions[currentFocus].classList.add("autocomplete-active");
+          }
+      
+          function removeActive(suggestions) {
+            for (let i = 0; i < suggestions.length; i++) {
+              suggestions[i].classList.remove("autocomplete-active");
+            }
+          }
+      
+          function closeAllLists(elmnt) {
+            const autocompleteLists = document.getElementsByClassName("autocomplete-items");
+            for (let i = 0; i < autocompleteLists.length; i++) {
+              if (elmnt != autocompleteLists[i] && elmnt != input) {
+                autocompleteLists[i].parentNode.removeChild(autocompleteLists[i]);
+              }
+            }
+          }
+      
+          document.addEventListener("click", function(e) {
+            closeAllLists(e.target);
+          });
+        }
+      
+        // Function to display lands
+        function displayLands(lands) {
+          const searchResults = document.getElementById('searchResults');
+          const noResults = document.getElementById('noResults');
+          const resultsCount = document.getElementById('resultsCount');
+      
+          searchResults.innerHTML = '';
+          resultsCount.textContent = `${lands.length} lands found`;
+      
+          if (lands.length === 0) {
+            noResults.classList.remove('hidden');
+          } else {
+            noResults.classList.add('hidden');
+      
             lands.forEach(land => {
-                const card = createLandCard(land);
-                landsGrid.appendChild(card);
+              const landCard = document.createElement('div');
+              landCard.className = 'bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300';
+      
+              landCard.innerHTML = `
+                <div class="relative h-48 overflow-hidden">
+                  <img src="${land.image}" alt="${land.title}" class="w-full h-full object-cover">
+                  <div class="absolute bottom-0 left-0 bg-green-600 text-white px-3 py-1">
+                    ${land.landType}
+                  </div>
+                </div>
+                <div class="p-4">
+                  <h3 class="text-xl font-semibold text-gray-800 mb-2">${land.title}</h3>
+                  <p class="text-gray-600 mb-2">${land.location}</p>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-green-700 font-bold">$${land.price.toLocaleString()}</span>
+                    <span class="text-gray-600">${land.size} acres</span>
+                  </div>
+                  <p class="text-gray-600 text-sm">${land.description}</p>
+                </div>
+              `;
+      
+              searchResults.appendChild(landCard);
             });
+          }
         }
-        
-        // Create a land card element
-        function createLandCard(land) {
-            const card = document.createElement('div');
-            card.className = 'land-card';
-            
-            // Get type class for styling
-            const typeClass = `type-${land.type.toLowerCase().replace(/\s+/g, '-')}`;
-            
-            // Format price with commas
-            const formattedPrice = new Intl.NumberFormat('en-IN', {
-                style: 'currency',
-                currency: 'INR',
-                maximumFractionDigits: 0
-            }).format(land.price);
-            
-            card.innerHTML = `
-                <div class="land-image">
-                    <img src="${land.image}" alt="${land.title}">
-                </div>
-                <div class="land-details">
-                    <h3 class="land-title">${land.title}</h3>
-                    <div class="land-location">${land.location}</div>
-                    <div class="land-price">${formattedPrice}</div>
-                    <div class="land-meta">
-                        <span>${land.size}</span>
-                    </div>
-                    <span class="land-type ${typeClass}">${land.type}</span>
-                </div>
-            `;
-            
-            return card;
-        }
-        
-        // Handle search button click
-        function handleSearch() {
-            const searchTerm = searchInput.value.trim();
-            currentFilters.q = searchTerm;
-            fetchLands(currentFilters);
-        }
-        
-        // Apply all filters
-        function applyFilters() {
-            currentFilters = {
-                q: searchInput.value.trim(),
-                location: locationFilter.value,
-                type: typeFilter.value,
-                minPrice: minPriceInput.value,
-                maxPrice: maxPriceInput.value,
-                minSize: minSizeInput.value,
-                maxSize: maxSizeInput.value
-            };
-            
-            fetchLands(currentFilters);
-        }
-        
-        // Reset all filters
-        function resetFilters() {
-            // Reset input values
-            searchInput.value = '';
-            locationFilter.value = '';
-            typeFilter.value = '';
-            minPriceInput.value = '';
-            maxPriceInput.value = '';
-            minSizeInput.value = '';
-            maxSizeInput.value = '';
-            
-            // Reset filters object
-            currentFilters = {
-                q: '',
-                location: '',
-                type: '',
-                minPrice: '',
-                maxPrice: '',
-                minSize: '',
-                maxSize: ''
-            };
-            
-            // Fetch all lands again
-            fetchLands();
-        }
-        
-        // Show/hide loading indicator
-        function showLoading(isLoading) {
-            loadingContainer.style.display = isLoading ? 'block' : 'none';
-            landsGrid.style.display = isLoading ? 'none' : 'grid';
-        }
-        
-        // Show error message
-        function showErrorMessage(message) {
-            noResultsContainer.textContent = message;
-            noResultsContainer.style.display = 'block';
-        }
-    </script>
+    
+  </script>
 </body>
 </html>
