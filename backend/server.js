@@ -63,6 +63,12 @@ app.get('/home', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'home.html')); // Protected home page
 });
 
+
+//for buyer
+
+app.get('/buyer', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'buyer.html'));
+});
 app.get('/logout', logoutUser); // Add logout route
 
 
@@ -83,6 +89,7 @@ app.post('/login', loginUser); // Login an existing user
 //         res.status(500).json({ message: 'Error fetching profile' });
 //     }
 // });
+
 
 // SUGGESTION: Add a route for land registration data input (example)
 // app.post('/api/land', isAuthenticated, async (req, res) => {
