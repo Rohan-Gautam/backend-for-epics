@@ -1,0 +1,285 @@
+<!-- Declare the document type as HTML5 -->
+<!DOCTYPE html>
+<!-- Define the HTML element with English language -->
+<html lang="en">
+<head>
+    <!-- Set character encoding to UTF-8 for universal compatibility -->
+    <meta charset="UTF-8" />
+    <!-- Ensure responsive design by setting viewport to device width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Set the page title displayed in the browser tab -->
+    <title>Register Land</title>
+    <!-- Internal CSS for styling the form -->
+    <style>
+        /* Set default font and background for the entire page */
+        body {
+            font-family: Arial, sans-serif; /* Clean, readable font */
+            background-color: #f4f4f4; /* Light gray background */
+            margin: 0; /* Remove default margins */
+        }
+        /* Style the main container for the form */
+        .container {
+            max-width: 600px; /* Limit width for readability */
+            margin: 50px auto; /* Center horizontally with top/bottom margin */
+            padding: 20px; /* Inner spacing */
+            background: white; /* White background for form */
+            border-radius: 5px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+        }
+        /* Style the form heading */
+        h2 {
+            text-align: center; /* Center the heading */
+            margin-bottom: 20px; /* Space below heading */
+        }
+        /* Style each form group (label + input) */
+        .form-group {
+            margin-bottom: 15px; /* Space between form groups */
+        }
+        /* Style labels for inputs */
+        label {
+            display: block; /* Make labels full-width */
+            font-weight: bold; /* Emphasize labels */
+            margin-bottom: 5px; /* Space below label */
+        }
+        /* Style text inputs, number inputs, select, and textarea */
+        input,
+        select,
+        textarea {
+            width: 100%; /* Full width of container */
+            padding: 8px; /* Inner spacing */
+            border: 1px solid #ccc; /* Light gray border */
+            border-radius: 4px; /* Rounded corners */
+            box-sizing: border-box; /* Include padding in width */
+        }
+        /* Style textarea specifically */
+        textarea {
+            height: 100px; /* Fixed height for description */
+            resize: vertical; /* Allow vertical resizing only */
+        }
+        /* Style file input for images (not used here, kept for consistency) */
+        input[type="file"] {
+            padding: 3px; /* Adjust padding for file input */
+        }
+        /* Style the submit button */
+        button {
+            width: 100%; /* Full width */
+            padding: 10px; /* Comfortable padding */
+            background-color: #28a745; /* Green background */
+            color: white; /* White text */
+            border: none; /* No border */
+            border-radius: 4px; /* Rounded corners */
+            cursor: pointer; /* Pointer on hover */
+            font-size: 16px; /* Readable text size */
+        }
+        /* Change button color on hover */
+        button:hover {
+            background-color: #218838; /* Darker green */
+        }
+        /* Style the message div for success/error feedback */
+        .message {
+            margin-top: 15px; /* Space above message */
+            padding: 10px; /* Inner spacing */
+            border-radius: 4px; /* Rounded corners */
+            text-align: center; /* Center text */
+        }
+        /* Style success messages */
+        .message.success {
+            background-color: #d4edda; /* Light green background */
+            color: #155724; /* Dark green text */
+        }
+        /* Style error messages */
+        .message.error {
+            background-color: #f8d7da; /* Light red background */
+            color: #721c24; /* Dark red text */
+        }
+    </style>
+</head>
+<body>
+<!-- Main container for the land registration form -->
+<div class="container">
+    <!-- Heading for the form -->
+    <h2>Register Your Land</h2>
+    <!-- Form to collect land details -->
+    <form id="landForm">
+        <!-- Form group for land title -->
+        <div class="form-group">
+            <!-- Label for title input -->
+            <label for="title">Land Title</label>
+            <!-- Text input for land title -->
+            <input type="text" id="title" name="title" required />
+        </div>
+        <!-- Form group for description -->
+        <div class="form-group">
+            <!-- Label for description -->
+            <label for="description">Description</label>
+            <!-- Textarea for land description -->
+            <textarea id="description" name="description" required></textarea>
+        </div>
+        <!-- Form group for address -->
+        <div class="form-group">
+            <!-- Label for address -->
+            <label for="location-address">Address</label>
+            <!-- Text input for address -->
+            <input type="text" id="location-address" name="location.address" required />
+        </div>
+        <!-- Form group for city -->
+        <div class="form-group">
+            <!-- Label for city -->
+            <label for="location-city">City</label>
+            <!-- Text input for city -->
+            <input type="text" id="location-city" name="location.city" required />
+        </div>
+        <!-- Form group for state -->
+        <div class="form-group">
+            <!-- Label for state -->
+            <label for="location-state">State</label>
+            <!-- Text input for state -->
+            <input type="text" id="location-state" name="location.state" required />
+        </div>
+        <!-- Form group for pincode -->
+        <div class="form-group">
+            <!-- Label for pincode -->
+            <label for="location-pincode">Pincode</label>
+            <!-- Text input for pincode with 6-digit validation -->
+            <input type="text" id="location-pincode" name="location.pincode" pattern="\d{6}" required />
+        </div>
+        <!-- Form group for area value -->
+        <div class="form-group">
+            <!-- Label for area value -->
+            <label for="area-value">Area Value</label>
+            <!-- Number input for area size -->
+            <input type="number" id="area-value" name="area.value" min="0" step="0.01" required />
+        </div>
+        <!-- Form group for area unit -->
+        <div class="form-group">
+            <!-- Label for area unit -->
+            <label for="area-unit">Area Unit</label>
+            <!-- Dropdown for area unit -->
+            <select id="area-unit" name="area.unit" required>
+                <!-- Default option, disabled -->
+                <option value="" disabled selected>Select unit</option>
+                <!-- Square feet option -->
+                <option value="sqft">Square Feet</option>
+                <!-- Square meters option -->
+                <option value="sqm">Square Meters</option>
+                <!-- Acre option -->
+                <option value="acre">Acre</option>
+                <!-- Hectare option -->
+                <option value="hectare">Hectare</option>
+            </select>
+        </div>
+        <!-- Form group for property type -->
+        <div class="form-group">
+            <!-- Label for property type -->
+            <label for="propertyType">Property Type</label>
+            <!-- Dropdown for property type -->
+            <select id="propertyType" name="propertyType" required>
+                <!-- Default option, disabled -->
+                <option value="" disabled selected>Select property type</option>
+                <!-- Residential option -->
+                <option value="residential">Residential</option>
+                <!-- Commercial option -->
+                <option value="commercial">Commercial</option>
+                <!-- Agricultural option -->
+                <option value="agricultural">Agricultural</option>
+                <!-- Industrial option -->
+                <option value="industrial">Industrial</option>
+            </select>
+        </div>
+        <!-- Form group for document IDs -->
+        <div class="form-group">
+            <!-- Label for document IDs -->
+            <label for="documentIds">Document IDs (comma-separated)</label>
+            <!-- Text input for document IDs -->
+            <input type="text" id="documentIds" name="documentIds" placeholder="e.g., DOC1,DOC2" required />
+        </div>
+        <!-- Form group for sale description -->
+        <div class="form-group">
+            <!-- Label for sale description -->
+            <label for="saleDescription">Sale Description (Optional)</label>
+            <!-- Textarea for sale description -->
+            <textarea id="saleDescription" name="saleDescription"></textarea>
+        </div>
+        <!-- Form group for images -->
+        <div class="form-group">
+            <!-- Label for images -->
+            <label for="images">Images (comma-separated URLs)</label>
+            <!-- Text input for image URLs -->
+            <input type="text" id="images" name="images" placeholder="e.g., url1,url2" />
+        </div>
+        <!-- Submit button for the form -->
+        <button type="submit">Register Land</button>
+    </form>
+    <!-- Div to display success or error messages -->
+    <div id="message" class="message"></div>
+</div>
+<!-- Internal JavaScript to handle form submission -->
+<script>
+    // Add event listener to the form for submit events
+    document.getElementById('landForm').addEventListener('submit', async (e) => {
+        // Prevent default form submission behavior
+        e.preventDefault();
+        // Get the message div for displaying feedback
+        const messageDiv = document.getElementById('message');
+        // Clear any previous messages
+        messageDiv.textContent = '';
+        // Create an object with land details from form inputs
+        const formData = {
+            // Get land title
+            title: document.getElementById('title').value,
+            // Get description
+            description: document.getElementById('description').value,
+            // Structure location object
+            location: {
+                address: document.getElementById('location-address').value,
+                city: document.getElementById('location-city').value,
+                state: document.getElementById('location-state').value,
+                pincode: document.getElementById('location-pincode').value,
+            },
+            // Structure area object
+            area: {
+                value: parseFloat(document.getElementById('area-value').value),
+                unit: document.getElementById('area-unit').value,
+            },
+            // Get property type
+            propertyType: document.getElementById('propertyType').value,
+            // Get document IDs as an array
+            documentIds: document.getElementById('documentIds').value.split(',').map(id => id.trim()).filter(id => id),
+            // Get sale description
+            saleDescription: document.getElementById('saleDescription').value,
+            // Get images as an array
+            images: document.getElementById('images').value.split(',').map(url => url.trim()).filter(url => url),
+        };
+        try {
+            // Send POST request to the land registration endpoint
+            const response = await fetch('/api/land/register', {
+                method: 'POST', // Use POST method
+                headers: { 'Content-Type': 'application/json' }, // Set JSON content type
+                body: JSON.stringify(formData), // Convert form data to JSON
+                credentials: 'include', // Include cookies for session authentication
+            });
+            // Parse the response JSON
+            const result = await response.json();
+            // Update message div with response message
+            messageDiv.textContent = result.message;
+            // Check if request was successful
+            if (response.ok) {
+                // Apply success styling
+                messageDiv.className = 'message success';
+                // Redirect to home page after 2 seconds
+                setTimeout(() => (window.location.href = '/home'), 2000);
+            } else {
+                // Apply error styling
+                messageDiv.className = 'message error';
+            }
+        } catch (error) {
+            // Handle network or server errors
+            messageDiv.className = 'message error';
+            messageDiv.textContent = 'Error connecting to server';
+            // Log error for debugging
+            console.error('Submission error:', error);
+        }
+    });
+</script>
+</body>
+</html>
