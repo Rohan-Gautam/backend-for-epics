@@ -11,7 +11,8 @@ import { isAuthenticated } from './auth.js'; // Middleware to check if a user is
 import cookieParser from 'cookie-parser'; // Middleware to parse cookies
 import { registerLand } from './register-land.js';
 import { getProfile, getUserLands, logout } from './profile.js';
-import { sellLand } from './sell-Land.js';
+import { sellLand } from './sellLand.js';
+import { getSellLands, updateSellLandStatus } from './govtSeller.js';
 
 // Initialize the Express application
 const app = express();
@@ -121,6 +122,12 @@ app.post('/api/sell-land', isAuthenticated, sellLand);
 
 app.get('/sell-land', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'sell-land.html'));
+});
+
+app.get('/api/govt/sell-lands', isAuthenticated, getSellLands);
+app.post('/api/govt/sell-lands/:landId/:action', isAuthenticated, updateSellLandStatus);
+app.get('/govt-seller', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'govt-seller.html'));
 });
 
 

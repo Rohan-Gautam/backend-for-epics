@@ -61,13 +61,13 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="autocomplete">
             <label for="location" class="block text-gray-700 font-medium mb-2">Location</label>
-            <input type="text" id="location" name="location" placeholder="Enter city, state, or zip code" 
+            <input type="text" id="location" name="location" placeholder="Enter city, state, or zip code"
               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
           </div>
-          
+
           <div>
             <label for="landType" class="block text-gray-700 font-medium mb-2">Land Type</label>
-            <select id="landType" name="landType" 
+            <select id="landType" name="landType"
               class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
               <option value="">All Land Types</option>
               <option value="Residential">Residential</option>
@@ -83,10 +83,10 @@
           <div>
             <label for="priceRange" class="block text-gray-700 font-medium mb-4">Price Range ($)</label>
             <div class="flex items-center space-x-4">
-              <input type="number" id="minPrice" min="0" placeholder="Min" 
+              <input type="number" id="minPrice" min="0" placeholder="Min"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
               <span class="text-gray-500">to</span>
-              <input type="number" id="maxPrice" min="0" placeholder="Max" 
+              <input type="number" id="maxPrice" min="0" placeholder="Max"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="mt-4">
@@ -98,10 +98,10 @@
           <div>
             <label for="sizeRange" class="block text-gray-700 font-medium mb-4">Size Range (acres)</label>
             <div class="flex items-center space-x-4">
-              <input type="number" id="minSize" min="0" step="0.1" placeholder="Min" 
+              <input type="number" id="minSize" min="0" step="0.1" placeholder="Min"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
               <span class="text-gray-500">to</span>
-              <input type="number" id="maxSize" min="0" step="0.1" placeholder="Max" 
+              <input type="number" id="maxSize" min="0" step="0.1" placeholder="Max"
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <div class="mt-4">
@@ -134,7 +134,7 @@
 
   <script>
         let landsData;
-      
+
         document.addEventListener('DOMContentLoaded', function() {
           fetch('../data/lands.json')
             .then(response => {
@@ -145,7 +145,7 @@
             })
             .then(data => {
               landsData = data;
-      
+
               // Initialize form elements
               const searchForm = document.getElementById('searchForm');
               const locationInput = document.getElementById('location');
@@ -161,37 +161,37 @@
               const searchResults = document.getElementById('searchResults');
               const noResults = document.getElementById('noResults');
               const resultsCount = document.getElementById('resultsCount');
-      
+
               // Initialize with all data displayed
               displayLands(landsData);
-      
+
               // Set up autocomplete for location
               setupAutocomplete(locationInput, getUniqueLocations());
-      
+
               // Set up price slider
               priceSlider.addEventListener('input', function() {
                 const value = parseInt(this.value).toLocaleString();
                 priceValue.textContent = value;
                 maxPriceInput.value = this.value;
-      
+
                 // Ensure min price doesn't exceed max price
                 if (minPriceInput.value && parseInt(minPriceInput.value) > parseInt(this.value)) {
                   minPriceInput.value = this.value;
                 }
               });
-      
+
               // Set up size slider
               sizeSlider.addEventListener('input', function() {
                 const value = parseFloat(this.value);
                 sizeValue.textContent = value;
                 maxSizeInput.value = value;
-      
+
                 // Ensure min size doesn't exceed max size
                 if (minSizeInput.value && parseFloat(minSizeInput.value) > value) {
                   minSizeInput.value = value;
                 }
               });
-      
+
               // Handle min/max price inputs
               minPriceInput.addEventListener(' onchange', function() {
                 if (maxPriceInput.value && parseInt(this.value) > parseInt(maxPriceInput.value)) {
@@ -200,19 +200,19 @@
                   priceValue.textContent = parseInt(this.value).toLocaleString();
                 }
               });
-      
+
               maxPriceInput.addEventListener('change', function() {
                 if (parseInt(this.value) > parseInt(priceSlider.max)) {
                   this.value = priceSlider.max;
                 }
                 priceSlider.value = this.value;
                 priceValue.textContent = parseInt(this.value).toLocaleString();
-      
+
                 if (minPriceInput.value && parseInt(minPriceInput.value) > parseInt(this.value)) {
                   minPriceInput.value = this.value;
                 }
               });
-      
+
               // Handle min/max size inputs
               minSizeInput.addEventListener('change', function() {
                 if (maxSizeInput.value && parseFloat(this.value) > parseFloat(maxSizeInput.value)) {
@@ -221,39 +221,39 @@
                   sizeValue.textContent = this.value;
                 }
               });
-      
+
               maxSizeInput.addEventListener('change', function() {
                 if (parseFloat(this.value) > parseFloat(sizeSlider.max)) {
                   this.value = sizeSlider.max;
                 }
                 sizeSlider.value = this.value;
                 sizeValue.textContent = this.value;
-      
+
                 if (minSizeInput.value && parseFloat(minSizeInput.value) > parseFloat(this.value)) {
                   minSizeInput.value = this.value;
                 }
               });
-      
+
               // Handle form submission
               searchForm.addEventListener('submit', function(e) {
                 e.preventDefault();
-      
+
                 const location = locationInput.value.trim();
                 const landType = landTypeSelect.value;
                 const minPrice = minPriceInput.value ? parseInt(minPriceInput.value) : 0;
                 const maxPrice = maxPriceInput.value ? parseInt(maxPriceInput.value) : Number.MAX_SAFE_INTEGER;
                 const minSize = minSizeInput.value ? parseFloat(minSizeInput.value) : 0;
                 const maxSize = maxSizeInput.value ? parseFloat(maxSizeInput.value) : Number.MAX_SAFE_INTEGER;
-      
+
                 const filteredLands = landsData.filter(land => {
                   const locationMatch = !location || land.location.toLowerCase().includes(location.toLowerCase());
                   const typeMatch = !landType || land.landType === landType;
                   const priceMatch = land.price >= minPrice && land.price <= maxPrice;
                   const sizeMatch = land.size >= minSize && land.size <= maxSize;
-      
+
                   return locationMatch && typeMatch && priceMatch && sizeMatch;
                 });
-      
+
                 displayLands(filteredLands);
               });
             })
@@ -263,56 +263,56 @@
               searchResults.innerHTML = '<p class="text-red-500">Failed to load land data. Please try again later.</p>';
             });
         });
-      
+
         // Helper function to get unique locations
         function getUniqueLocations() {
           if (!landsData) return [];
           const locations = landsData.map(land => land.location);
           return [...new Set(locations)];
         }
-      
+
         // Function to set up autocomplete
         function setupAutocomplete(input, items) {
           let currentFocus;
-      
+
           input.addEventListener("input", function() {
             closeAllLists();
             if (!this.value) return false;
             currentFocus = -1;
-      
+
             const autocompleteSuggestions = document.createElement("div");
             autocompleteSuggestions.setAttribute("id", this.id + "autocomplete-list");
             autocompleteSuggestions.setAttribute("class", "autocomplete-items");
             this.parentNode.appendChild(autocompleteSuggestions);
-      
+
             const inputVal = this.value.toLowerCase();
-      
+
             for (let i = 0; i < items.length; i++) {
               if (items[i].toLowerCase().includes(inputVal)) {
                 const suggestion = document.createElement("div");
-      
+
                 // Highlight the matching part of the suggestion
                 const matchIndex = items[i].toLowerCase().indexOf(inputVal);
                 suggestion.innerHTML = items[i].substr(0, matchIndex);
                 suggestion.innerHTML += "<strong>" + items[i].substr(matchIndex, inputVal.length) + "</strong>";
                 suggestion.innerHTML += items[i].substr(matchIndex + inputVal.length);
-      
+
                 suggestion.innerHTML += "<input type='hidden' value='" + items[i] + "'>";
-      
+
                 suggestion.addEventListener("click", function() {
                   input.value = this.getElementsByTagName("input")[0].value;
                   closeAllLists();
                 });
-      
+
                 autocompleteSuggestions.appendChild(suggestion);
               }
             }
           });
-      
+
           input.addEventListener("keydown", function(e) {
             let suggestions = document.getElementById(this.id + "autocomplete-list");
             if (suggestions) suggestions = suggestions.getElementsByTagName("div");
-      
+
             if (e.key === "ArrowDown") {
               currentFocus++;
               addActive(suggestions);
@@ -324,7 +324,7 @@
               if (currentFocus > -1 && suggestions) suggestions[currentFocus].click();
             }
           });
-      
+
           function addActive(suggestions) {
             if (!suggestions) return false;
             removeActive(suggestions);
@@ -332,13 +332,13 @@
             if (currentFocus < 0) currentFocus = (suggestions.length - 1);
             suggestions[currentFocus].classList.add("autocomplete-active");
           }
-      
+
           function removeActive(suggestions) {
             for (let i = 0; i < suggestions.length; i++) {
               suggestions[i].classList.remove("autocomplete-active");
             }
           }
-      
+
           function closeAllLists(elmnt) {
             const autocompleteLists = document.getElementsByClassName("autocomplete-items");
             for (let i = 0; i < autocompleteLists.length; i++) {
@@ -347,30 +347,30 @@
               }
             }
           }
-      
+
           document.addEventListener("click", function(e) {
             closeAllLists(e.target);
           });
         }
-      
+
         // Function to display lands
         function displayLands(lands) {
           const searchResults = document.getElementById('searchResults');
           const noResults = document.getElementById('noResults');
           const resultsCount = document.getElementById('resultsCount');
-      
+
           searchResults.innerHTML = '';
           resultsCount.textContent = `${lands.length} lands found`;
-      
+
           if (lands.length === 0) {
             noResults.classList.remove('hidden');
           } else {
             noResults.classList.add('hidden');
-      
+
             lands.forEach(land => {
               const landCard = document.createElement('div');
               landCard.className = 'bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300';
-      
+
               landCard.innerHTML = `
                 <div class="relative h-48 overflow-hidden">
                   <img src="${land.image}" alt="${land.title}" class="w-full h-full object-cover">
@@ -388,12 +388,12 @@
                   <p class="text-gray-600 text-sm">${land.description}</p>
                 </div>
               `;
-      
+
               searchResults.appendChild(landCard);
             });
           }
         }
-    
+
   </script>
 </body>
 </html>

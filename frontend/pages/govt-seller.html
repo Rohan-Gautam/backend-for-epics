@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Government Seller Review</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            color: #555;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .land-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .land-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            overflow: hidden;
+        }
+        .land-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .land-card h3 {
+            margin: 10px 0;
+            color: #333;
+        }
+        .land-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .buttons {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .approve-btn {
+            background-color: #28a745;
+        }
+        .approve-btn:hover {
+            background-color: #218838;
+        }
+        .decline-btn {
+            background-color: #dc3545;
+        }
+        .decline-btn:hover {
+            background-color: #c82333;
+        }
+        .message {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Government Seller Review</h1>
+    <div id="message" class="message"></div>
+
+    <!-- Pending Lands Section -->
+    <div class="section">
+        <h2>Pending Sale Requests</h2>
+        <div class="land-list" id="pendingLands"></div>
+    </div>
+
+    <!-- Approved Lands Section -->
+    <div class="section">
+        <h2>Approved Lands</h2>
+        <div class="land-list" id="approvedLands"></div>
+    </div>
+
+    <!-- Declined Lands Section -->
+    <div class="section">
+        <h2>Declined Lands</h2>
+        <div class="land-list" id="declinedLands"></div>
+    </div>
+</div>
+
+<script>
+    // Fetch and display lands
+    async function loadLands() {
+        const messageDiv = document.getElementById('message');
+        const pendingLandsDiv = document.getElementById('pendingLands');
+        const approvedLandsDiv = document.getElementById('approvedLands');
+        const declinedLandsDiv = document.getElementById('declinedLands');
+
+        try {
+            const response = await fetch('/api/govt/sell-lands', {
+                method: 'GET',
+                credentials: 'include',
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Failed to load sell requests');
+            }
+
+            const pending = result.lands.filter(land => land.status === 'pending');
+            const approved = result.lands.filter(land => land.status === 'approved');
+            const declined = result.lands.filter(land => land.status === 'declined');
+
+            pendingLandsDiv.innerHTML = pending.map(land => `
+          <div class="land-card">
+            <img src="${land.landImageUrl || land.land.images[0] || 'https://via.placeholder.com/150'}" alt="${land.land.title}">
+            <h3>${land.land.title}</h3>
+            <p><strong>Location:</strong> ${land.land.location.city}, ${land.land.location.state}</p>
+            <p><strong>Type:</strong> ${land.land.propertyType}</p>
+            <p><strong>Price:</strong> $${land.price}${land.negotiable ? ' (Negotiable)' : ''}</p>
+            <p><strong>Size:</strong> ${land.land.area.value} ${land.land.area.unit}</p>
+            <p>${land.land.description}</p>
+            <div class="buttons">
+              <button class="approve-btn" onclick="handleAction('${land._id}', 'approve')">Approve</button>
+              <button class="decline-btn" onclick="handleAction('${land._id}', 'decline')">Decline</button>
+            </div>
+          </div>
+        `).join('') || '<p>No pending requests.</p>';
+
+            approvedLandsDiv.innerHTML = approved.map(land => `
+          <div class="land-card">
+            <img src="${land.landImageUrl || land.land.images[0] || 'https://via.placeholder.com/150'}" alt="${land.land.title}">
+            <h3>${land.land.title}</h3>
+            <p><strong>Location:</strong> ${land.land.location.city}, ${land.land.location.state}</p>
+            <p><strong>Type:</strong> ${land.land.propertyType}</p>
+            <p><strong>Price:</strong> $${land.price}${land.negotiable ? ' (Negotiable)' : ''}</p>
+            <p><strong>Size:</strong> ${land.land.area.value} ${land.land.area.unit}</p>
+            <p>${land.land.description}</p>
+          </div>
+        `).join('') || '<p>No approved lands.</p>';
+
+            declinedLandsDiv.innerHTML = declined.map(land => `
+          <div class="land-card">
+            <img src="${land.landImageUrl || land.land.images[0] || 'https://via.placeholder.com/150'}" alt="${land.land.title}">
+            <h3>${land.land.title}</h3>
+            <p><strong>Location:</strong> ${land.land.location.city}, ${land.land.location.state}</p>
+            <p><strong>Type:</strong> ${land.land.propertyType}</p>
+            <p><strong>Price:</strong> $${land.price}${land.negotiable ? ' (Negotiable)' : ''}</p>
+            <p><strong>Size:</strong> ${land.land.area.value} ${land.land.area.unit}</p>
+            <p>${land.land.description}</p>
+          </div>
+        `).join('') || '<p>No declined lands.</p>';
+        } catch (error) {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = error.message;
+            console.error('Load lands error:', error);
+        }
+    }
+
+    // Handle approve/decline actions
+    async function handleAction(landId, action) {
+        const messageDiv = document.getElementById('message');
+        try {
+            const response = await fetch(`/api/govt/sell-lands/${landId}/${action}`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || `Failed to ${action} land`);
+            }
+
+            messageDiv.className = 'message success';
+            messageDiv.textContent = `Land ${action}d successfully`;
+            await loadLands();
+            setTimeout(() => (messageDiv.textContent = ''), 3000);
+        } catch (error) {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = error.message;
+            console.error(`${action} error:`, error);
+        }
+    }
+
+    // Load lands on page load
+    document.addEventListener('DOMContentLoaded', loadLands);
+</script>
+</body>
+</html>
