@@ -88,7 +88,7 @@
     <div class="action-buttons">
       <button onclick="navigateTo('register-land.html')">Register Land</button>
       <button onclick="navigateTo('buyer.html')">Buy Land</button>
-      <button onclick="navigateTo('sell-land.html')">Sell Land</button>
+      <button onclick="navigateTo('seller.html')">Sell Land</button>
       <button onclick="navigateTo('profile.html')">Profile</button>
       <a href="/logout" style="position: absolute; top: 20px; right: 20px; padding: 10px 20px; background-color: #dc3545; color: white; text-decoration: none; border-radius: 5px;" class="logout-btn">Logout</a>
       <style>
@@ -115,7 +115,11 @@
       function navigateTo(page) {
         if (page === 'buyer.html') {
           window.location.href = '/buyer';
-        } else {
+        } 
+        if (page === 'seller.html') {
+          window.location.href = '/seller';
+        } 
+        else {
           window.location.href = page;
         }
       }
