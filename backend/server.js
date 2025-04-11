@@ -11,6 +11,7 @@ import { isAuthenticated } from './auth.js'; // Middleware to check if a user is
 import cookieParser from 'cookie-parser'; // Middleware to parse cookies
 import { registerLand } from './register-land.js';
 import { getProfile, getUserLands, logout } from './profile.js';
+import { sellLand } from './sell-Land.js';
 
 // Initialize the Express application
 const app = express();
@@ -114,6 +115,15 @@ app.get('/profile', isAuthenticated, (req, res) => {
 app.get('/api/user/profile', isAuthenticated, getProfile); // Get user profile
 app.get('/api/user/lands', isAuthenticated, getUserLands); // Get user's lands
 app.post('/api/logout', isAuthenticated, logout);          // Logout user
+
+
+app.post('/api/sell-land', isAuthenticated, sellLand);
+
+app.get('/sell-land', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'sell-land.html'));
+});
+
+
 
 // API endpoints for user authentication
 // Endpoint: Register a new user

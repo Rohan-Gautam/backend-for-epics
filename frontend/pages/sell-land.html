@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sell Your Land</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        select, input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"] {
+            width: auto;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+            display: none;
+            margin-top: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Sell Your Land</h2>
+    <form id="sellLandForm">
+        <div class="form-group">
+            <label for="landId">Select Land to Sell</label>
+            <select id="landId" name="landId" required>
+                <option value="" disabled selected>Select a land</option>
+                <!-- Options populated by JavaScript -->
+            </select>
+            <span class="error" id="landId-error">Please select a land</span>
+        </div>
+        <div class="form-group">
+            <label for="price">Selling Price (in rupees)</label>
+            <input type="number" id="price" name="price" min="0" step="1" required>
+            <span class="error" id="price-error">Price is required and must be non-negative</span>
+        </div>
+        <div class="form-group">
+            <label for="landImageUrl">Land Image URL (Optional)</label>
+            <input type="url" id="landImageUrl" name="landImageUrl" placeholder="e.g., https://example.com/image.jpg">
+            <span class="error" id="landImageUrl-error">Please enter a valid URL</span>
+        </div>
+        <div class="form-group">
+            <label>
+                <input type="checkbox" id="negotiable" name="negotiable"> Price Negotiable
+            </label>
+        </div>
+        <div class="form-group">
+            <label for="contactPhoneNumber">Contact Phone Number (Optional)</label>
+            <input type="tel" id="contactPhoneNumber" name="contactPhoneNumber" placeholder="e.g., 1234567890">
+            <span class="error" id="contactPhoneNumber-error">Please enter a valid phone number</span>
+        </div>
+        <button type="submit" id="submitBtn" disabled>List for Sale</button>
+    </form>
+    <div id="message" class="message"></div>
+</div>
+
+<script>
+    // Function to validate a field
+    function validateField(input, errorElement, customMessage, customCheck) {
+        const value = input.value.trim();
+        const isValid = customCheck ? customCheck(value) : (input.required ? value.length > 0 : true);
+        errorElement.style.display = isValid ? 'none' : 'block';
+        if (customMessage && !isValid) {
+            errorElement.textContent = customMessage;
+        }
+        return isValid;
+    }
+
+    // Get form elements
+    const landIdSelect = document.getElementById('landId');
+    const priceInput = document.getElementById('price');
+    const landImageUrlInput = document.getElementById('landImageUrl');
+    const negotiableCheckbox = document.getElementById('negotiable');
+    const contactPhoneNumberInput = document.getElementById('contactPhoneNumber');
+    const submitBtn = document.getElementById('submitBtn');
+    const messageDiv = document.getElementById('message');
+
+    // Validate form and update submit button state
+    function validateForm() {
+        const landValid = validateField(landIdSelect, document.getElementById('landId-error'));
+        const priceValid = validateField(priceInput, document.getElementById('price-error'),
+            'Price is required and must be non-negative', value => value !== '' && Number(value) >= 0);
+        const imageUrlValid = validateField(landImageUrlInput, document.getElementById('landImageUrl-error'),
+            'Please enter a valid URL', value => !value || /^(https?:\/\/[^\s]+)$/.test(value));
+        const phoneValid = validateField(contactPhoneNumberInput, document.getElementById('contactPhoneNumber-error'),
+            'Please enter a valid phone number', value => !value || /^\d{10}$/.test(value));
+        submitBtn.disabled = !(landValid && priceValid && imageUrlValid && phoneValid);
+    }
+
+    // Load user's lands into the select dropdown
+    async function loadLands() {
+        try {
+            const response = await fetch('/api/user/lands', {
+                method: 'GET',
+                credentials: 'include',
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Failed to load your lands');
+            }
+
+            if (result.lands.length === 0) {
+                landIdSelect.innerHTML = '<option value="" disabled>No lands available</option>';
+                submitBtn.disabled = true;
+            } else {
+                landIdSelect.innerHTML = '<option value="" disabled selected>Select a land</option>' +
+                    result.lands.map(land => `
+              <option value="${land._id}">${land.title} - ${land.location.city}, ${land.location.state}</option>
+            `).join('');
+            }
+        } catch (error) {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = error.message;
+            console.error('Load lands error:', error);
+        }
+    }
+
+    // Add real-time validation
+    [landIdSelect, priceInput, landImageUrlInput, contactPhoneNumberInput].forEach(input => {
+        input.addEventListener('input', () => {
+            const errorElement = document.getElementById(`${input.id}-error`);
+            if (input.id === 'price') {
+                validateField(input, errorElement, 'Price is required and must be non-negative',
+                    value => value !== '' && Number(value) >= 0);
+            } else if (input.id === 'landImageUrl') {
+                validateField(input, errorElement, 'Please enter a valid URL',
+                    value => !value || /^(https?:\/\/[^\s]+)$/.test(value));
+            } else if (input.id === 'contactPhoneNumber') {
+                validateField(input, errorElement, 'Please enter a valid phone number',
+                    value => !value || /^\d{10}$/.test(value));
+            } else {
+                validateField(input, errorElement);
+            }
+            validateForm();
+        });
+    });
+
+    // Handle form submission
+    document.getElementById('sellLandForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        messageDiv.textContent = '';
+
+        const formData = {
+            landId: landIdSelect.value,
+            price: parseFloat(priceInput.value),
+            landImageUrl: landImageUrlInput.value || undefined,
+            negotiable: negotiableCheckbox.checked,
+            contactPhoneNumber: contactPhoneNumberInput.value || undefined,
+        };
+
+        try {
+            const response = await fetch('/api/sell-land', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData),
+                credentials: 'include',
+            });
+            const result = await response.json();
+
+            if (response.ok) {
+                messageDiv.className = 'message success';
+                messageDiv.textContent = result.message;
+                setTimeout(() => (window.location.href = '/profile'), 2000);
+            } else {
+                throw new Error(result.message || 'Failed to list land for sale');
+            }
+        } catch (error) {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = error.message;
+            console.error('Sell land error:', error);
+        }
+    });
+
+    // Load lands on page load
+    document.addEventListener('DOMContentLoaded', loadLands);
+</script>
+</body>
+</html>
