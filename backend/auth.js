@@ -1,11 +1,16 @@
 // Middleware to check if user is authenticated
 export const isAuthenticated = (req, res, next) => {
-    if (req.signedCookies && req.signedCookies.auth) {
-        // Cookie exists; assume valid for demo purposes
+    // Check session or signed cookie
+    const userId = req.session.userId || req.signedCookies.auth;
+    if (userId) {
+        req.session.userId = userId; // Ensure session consistency
         next();
     } else {
-        // No auth cookie; redirect to login
-        res.redirect('/login');
+        console.error('Authentication failed: No userId in session or cookies', {
+            session: req.session,
+            cookies: req.signedCookies,
+        });
+        res.status(401).send('Unauthorized: Please log in.');
     }
 };
 

@@ -8,6 +8,7 @@ import { loginUser } from './login.js';
 import { logoutUser } from './logout.js'; // Import logoutUser
 import { isAuthenticated } from './auth.js'; // Import authentication middleware
 import cookieParser from 'cookie-parser';
+import { registerLandWithUpload } from './land.js'; // New land handler
 
 const app = express();
 app.use(cookieParser('your-secret-key')); // Cookie parser with a secret key for signed cookies
@@ -21,6 +22,7 @@ const MONGO_URI = 'mongodb://localhost:27017/landRegistrationDB';
 
 // Middleware
 app.use('/assets', express.static(path.join(__dirname, '../frontend/assets'))); // Serve static assets
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.json()); // Parse JSON bodies
 app.use(
     session({
@@ -62,22 +64,20 @@ app.get('/register', (req, res) => {
 app.get('/home', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'home.html')); // Protected home page
 });
-
-
 //for buyer
-
 app.get('/buyer', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'buyer.html'));
 });
 app.get('/logout', logoutUser); // Add logout route
-
+app.get('/register-land', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'register-land.html'));
+});
 
 
 // API Endpoints
 app.post('/register', registerUser); // Register a new user
 app.post('/login', loginUser); // Login an existing user
-
-
+app.post('/land/register', isAuthenticated, registerLandWithUpload);
 
 // SUGGESTION: Add a route to fetch user profile data (example for expansion)
 // app.get('/api/profile', isAuthenticated, async (req, res) => {

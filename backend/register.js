@@ -21,9 +21,9 @@ const userSchema = new mongoose.Schema({
     gender: { type: String, required: true, enum: ['Male', 'Female', 'Other'] },
     fatherName: { type: String, required: true },
     occupation: { type: String, required: false },
+    aadhaarDoc: { type: String }, // Path to Aadhaar document
+    panDoc: { type: String }, // Path to PAN document
     createdAt: { type: Date, default: Date.now },
-    resetPasswordToken: { type: String }, // Add for password reset
-    resetPasswordExpires: { type: Date }, // Add for password reset expiry
 });
 
 const User = mongoose.model('User', userSchema);
