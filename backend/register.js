@@ -28,39 +28,107 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
-export const registerUser = async (req, res) => {
-    const {
-        name, username, email, password, aadhaarNumber, panNumber, phoneNumber,
-        address, dateOfBirth, nationality, gender, fatherName, occupation
-    } = req.body;
+// Modify the registerLand function in register-land.js to write to lands.json
 
+export const registerLand = async (req, res) => {
+    // Existing code remains...
+    
     try {
-        const existingUser = await User.findOne({
-            $or: [{ username }, { email }, { aadhaarNumber }, { panNumber }]
-        });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Username, email, Aadhaar, or PAN already exists' });
+        // Get user ID from signed cookie, based on server.js session authentication
+        const userId = req.signedCookies.auth;
+        // Verify user is authenticated
+        if (!userId) {
+            // Return unauthorized error if no user ID is found
+            return res.status(401).json({ message: 'User not authenticated' });
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const newUser = new User({
-            name, username, email, password: hashedPassword, aadhaarNumber, panNumber,
-            phoneNumber, address, dateOfBirth, nationality, gender, fatherName, occupation,
+        // Fetch user details from User collection
+        const user = await User.findById(userId).select('name email phoneNumber');
+        // Check if user exists in the database
+        if (!user) {
+            // Return not found error if user doesn't exist
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Create a new land document
+        const newLand = new Land({
+            // Assign user ID as owner
+            owner: userId,
+            // Automatically pass user details from UserSchema
+            userDetails: {
+                name: user.name,
+                email: user.email,
+                phoneNumber: user.phoneNumber,
+            },
+            // Assign land details from request body
+            title,
+            description,
+            location,
+            area,
+            propertyType,
+            documentIds,
+            saleDescription,
+            images,
         });
 
-        await newUser.save();
-        res.status(201).json({ message: 'User registered successfully', user: { username, email } });
-        res.redirect('/login');
+        // Save the land document to MongoDB
+        await newLand.save();
+        
+        // NEW CODE: Add the land to lands.json file
+        const fs = require('fs').promises;
+        const path = require('path');
+        
+        // Path to lands.json (adjust if needed)
+        const landsFilePath = path.join(__dirname, '../public/data/lands.json');
+        
+        try {
+            // Read existing lands
+            let landsData = [];
+            try {
+                const fileContent = await fs.readFile(landsFilePath, 'utf8');
+                landsData = JSON.parse(fileContent);
+            } catch (readError) {
+                // If file doesn't exist or is invalid, start with empty array
+                console.log('Creating new lands.json file');
+            }
+            
+            // Generate a new ID (typically done by the database, but we'll simulate it)
+            const newId = landsData.length > 0 ? Math.max(...landsData.map(land => land.id)) + 1 : 1;
+            
+            // Create land object for JSON file
+            const landForJson = {
+                id: newId,
+                title: title,
+                location: `${location.city}, ${location.state}`,
+                landType: propertyType.charAt(0).toUpperCase() + propertyType.slice(1),
+                price: 0, // Default price (will be updated when listed for sale)
+                size: area.value,
+                image: images && images.length > 0 ? images[0] : "/assets/images/default-land.jpg",
+                description: description,
+                ownerId: userId, // Add owner ID to track ownership
+                status: "available", // Initial status
+                registrationDate: new Date().toISOString()
+            };
+            
+            // Add to array
+            landsData.push(landForJson);
+            
+            // Write back to file
+            await fs.writeFile(landsFilePath, JSON.stringify(landsData, null, 2), 'utf8');
+            
+        } catch (fileError) {
+            console.error('Error updating lands.json:', fileError);
+            // Note: We don't want to fail the registration if JSON update fails
+            // So we just log the error but continue with successful response
+        }
+
+        // Respond with success message and minimal land details
+        res.status(201).json({
+            message: 'Land registered successfully',
+            land: { title, owner: userId },
+        });
     } catch (error) {
-        console.error('Detailed registration error:', error);
-        if (error.name === 'ValidationError') {
-            const errors = Object.values(error.errors).map(err => ({
-                field: err.path,
-                message: err.message || `Invalid value for ${err.path}`,
-            }));
-            return res.status(400).json({ message: 'Validation failed', errors });
-        }
-        res.status(500).json({ message: 'Server error during registration', error: error.message });
+        // Existing error handling code...
     }
 };
 

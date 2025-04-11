@@ -97,38 +97,22 @@ app.get('/buyer', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'buyer.html'));
 });
 
-app.get('/seller', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages', 'seller.html'));
+// Route: Handle user logout
+app.get('/logout', logoutUser); // Calls logoutUser function to clear session/cookies
+
+// Route: Serve land registration page (protected)
+app.get('/register-land', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'register-land.html'));
 });
 
-app.get('/logout', logoutUser); // Add logout route
+// API endpoints for user authentication
+// Endpoint: Register a new user
+app.post('/register', registerUser); // Handles POST requests to create a new user using registerUser function
 
+// Endpoint: Log in an existing user
+app.post('/login', loginUser); // Handles POST requests to authenticate users using loginUser function
 
-
-// API Endpoints
-app.post('/register', registerUser); // Register a new user
-app.post('/login', loginUser); // Login an existing user
-
-
-
-// SUGGESTION: Add a route to fetch user profile data (example for expansion)
-// app.get('/api/profile', isAuthenticated, async (req, res) => {
-//     const userId = req.signedCookies.auth;
-//     try {
-//         const user = await User.findById(userId).select('name username email'); // Assuming User model is imported
-//         res.json(user);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error fetching profile' });
-//     }
-// });
-
-
-// SUGGESTION: Add a route for land registration data input (example)
-// app.post('/api/land', isAuthenticated, async (req, res) => {
-//     const { title, location, size } = req.body;
-//     // Add logic to save land data to a new MongoDB collection
-//     res.status(201).json({ message: 'Land registered successfully' });
-// });
+app.post('/api/land/register', isAuthenticated, registerLand);
 
 // Start the server
 app.listen(PORT, () => {
