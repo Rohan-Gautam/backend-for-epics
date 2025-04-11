@@ -7,7 +7,9 @@ import { registerUser } from './register.js';
 import { loginUser } from './login.js';
 import { logoutUser } from './logout.js'; // Import logoutUser
 import { isAuthenticated } from './auth.js'; // Import authentication middleware
+import { isGovtAuthenticated, restrictToGovernment } from './govt-auth.js'; // Import government authentication middleware
 import cookieParser from 'cookie-parser';
+import govtEmpRoutes from './govt-emp.js';
 
 const app = express();
 app.use(cookieParser('your-secret-key')); // Cookie parser with a secret key for signed cookies
@@ -38,6 +40,9 @@ app.use(express.static(path.join(__dirname, '../frontend'), {
         if (filePath.endsWith('home.html')) {
             res.status(403).send('Forbidden'); // Prevent direct access to home.html without authentication
         }
+        if (filePath.endsWith('Govt-verification.html')) {
+            res.status(403).send('Forbidden'); // Prevent direct access to Govt-verification.html
+        }
     },
 }));
 
@@ -63,47 +68,34 @@ app.get('/home', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'home.html')); // Protected home page
 });
 
-
 //for buyer
-
 app.get('/buyer', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'buyer.html'));
 });
+
 app.get('/logout', logoutUser); // Add logout route
 
+// Government routes with authentication
+app.get('/pages/Government/Govt-login.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages/Government', 'Govt-login.html'));
+});
 
+app.get('/pages/Government/Govt-emp-register.html', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages/Government', 'Govt-emp-register.html'));
+});
+
+// Government verification page with proper authentication
+app.get('/pages/Government/Govt-verification.html', isGovtAuthenticated, restrictToGovernment, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages/Government', 'Govt-verification.html'));
+});
 
 // API Endpoints
 app.post('/register', registerUser); // Register a new user
 app.post('/login', loginUser); // Login an existing user
 
-
-
-// SUGGESTION: Add a route to fetch user profile data (example for expansion)
-// app.get('/api/profile', isAuthenticated, async (req, res) => {
-//     const userId = req.signedCookies.auth;
-//     try {
-//         const user = await User.findById(userId).select('name username email'); // Assuming User model is imported
-//         res.json(user);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error fetching profile' });
-//     }
-// });
-
-
-// SUGGESTION: Add a route for land registration data input (example)
-// app.post('/api/land', isAuthenticated, async (req, res) => {
-//     const { title, location, size } = req.body;
-//     // Add logic to save land data to a new MongoDB collection
-//     res.status(201).json({ message: 'Land registered successfully' });
-// });
+app.use(govtEmpRoutes);
 
 // Start Server
 app.listen(PORT, () => {
     console.log(`Server running on: http://localhost:${PORT}`);
 });
-
-// NOTES:
-// - To add more functionality, consider creating separate route files (e.g., `routes/userRoutes.js`) and importing them.
-// - Example: `app.use('/api/users', userRoutes);`
-// - For data input, create new schemas (e.g., Land) and endpoints to handle CRUD operations.

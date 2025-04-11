@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Government Official Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eaf4fc;
+        }
+
+        header {
+            background-color: #0078D7;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 0.8rem 1.5rem;
+            border: 1px solid #0078D7;
+            border-radius: 4px;
+            background-color: white;
+            color: #0078D7;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background-color: #0078D7;
+            color: white;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            margin: 0;
+            color: #333;
+        }
+
+        .card p {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background-color: #ffeb3b;
+            color: #333;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: #0078D7;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Government Official Dashboard</h1>
+        <p>Verify property registrations and maintain the integrity of the land registry</p>
+    </header>
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active">Pending Verification <span>(1)</span></div>
+            <div class="tab">Verified Properties</div>
+            <div class="tab">Rejected Properties</div>
+        </div>
+        <div class="card">
+            <h2>Los Angeles, CA</h2>
+            <p>2200 sq ft • $750,000</p>
+            <p>Spacious house with garden</p>
+            <p>Documents: 1</p>
+            <span class="status">Pending</span>
+            <a href="#" class="btn">View Details</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -17,6 +17,9 @@ export const loginUser = async (req, res) => {
             return res.status(400).json({ message: 'Invalid email or password' });
         }
 
+        // Set user role in session
+        req.session.userRole = user.role; // Assuming the User model has a 'role' field
+
         // Set a signed cookie with user ID
         res.cookie('auth', user._id.toString(), { signed: true, httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day expiry
 

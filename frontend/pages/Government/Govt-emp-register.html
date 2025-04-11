@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Government Employee</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .small-text {
+            font-size: 12px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Government Employee Registration</h1>
+        <form id="govtEmpRegisterForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="empId">Employee ID</label>
+                <input type="text" id="empId" name="empId" placeholder="Employee ID" required>
+            </div>
+            <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" placeholder="Full Name" required>
+            </div>
+            <div class="form-group">
+                <label for="department">Department / Designation</label>
+                <input type="text" id="department" name="department" placeholder="Department / Designation" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Official Email Address</label>
+                <input type="email" id="email" name="email" placeholder="Official Email Address" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Contact Number</label>
+                <input type="tel" id="phone" name="phone" placeholder="Contact Number" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirmPassword">Confirm Password</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm Password" required>
+            </div>
+            <div class="form-group">
+                <label for="govId" class="small-text">Upload ID/Appointment Letter (PDF or Image)</label>
+                <input type="file" id="govId" name="govId" accept=".pdf, image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="verificationCode">Verification Code</label>
+                <input type="text" id="verificationCode" name="verificationCode" placeholder="Enter Verification Code" required>
+            </div>
+            <button type="submit">Register</button>
+            <p class="small-text">Already have an account? <a href="Govt-login.html">Log in</a></p>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('govtEmpRegisterForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            try {
+                const response = await fetch('/govt-emp-register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(jsonData),
+                });
+                const result = await response.json();
+                if (response.ok) {
+                    alert(result.message);
+                } else {
+                    alert(result.message || 'Registration failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Failed to connect to server');
+            }
+        });
+    </script>
+</body>
+</html>
