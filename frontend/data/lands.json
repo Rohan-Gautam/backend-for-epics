@@ -1,0 +1,122 @@
+[
+    {
+      "id": 1,
+      "title": "Beautiful Farmland",
+      "location": "Austin, Texas",
+      "landType": "Agricultural",
+      "price": 250000,
+      "size": 15.5,
+      "image": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Prime farmland with fertile soil, perfect for crops or livestock."
+    },
+    {
+      "id": 2,
+      "title": "Seaside Property",
+      "location": "Malibu, California",
+      "landType": "Residential",
+      "price": 850000,
+      "size": 2.3,
+      "image": "https://images.unsplash.com/photo-1527030280862-64139fba04ca?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Stunning oceanfront property ready for your dream home."
+    },
+    {
+      "id": 3,
+      "title": "Mountain View Lot",
+      "location": "Denver, Colorado",
+      "landType": "Residential",
+      "price": 320000,
+      "size": 1.8,
+      "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Beautiful lot with panoramic mountain views and hiking trails nearby."
+    },
+    {
+      "id": 4,
+      "title": "Commercial Downtown Lot",
+      "location": "Seattle, Washington",
+      "landType": "Commercial",
+      "price": 1200000,
+      "size": 0.8,
+      "image": "https://images.unsplash.com/photo-1519501025264-65ba15a82390?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Prime downtown location for your next business venture."
+    },
+    {
+      "id": 5,
+      "title": "Desert Ranch",
+      "location": "Phoenix, Arizona",
+      "landType": "Recreational",
+      "price": 180000,
+      "size": 25.4,
+      "image": "https://images.unsplash.com/photo-1542317854-f9596ae570f7?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Expansive desert property with stunning sunsets and natural beauty."
+    },
+    {
+      "id": 6,
+      "title": "Industrial Park Lot",
+      "location": "Detroit, Michigan",
+      "landType": "Industrial",
+      "price": 450000,
+      "size": 3.2,
+      "image": "https://images.unsplash.com/photo-1553413077-190dd305871c?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Developed lot in active industrial zone with all utilities."
+    },
+    {
+      "id": 7,
+      "title": "Lakefront Property",
+      "location": "Minneapolis, Minnesota",
+      "landType": "Residential",
+      "price": 395000,
+      "size": 1.5,
+      "image": "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Beautiful lakefront property with private dock and swimming area."
+    },
+    {
+      "id": 8,
+      "title": "Vineyard Estate",
+      "location": "Napa, California",
+      "landType": "Agricultural",
+      "price": 780000,
+      "size": 12.7,
+      "image": "https://images.unsplash.com/photo-1563514227147-6d2e624f241b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Established vineyard with mature grapevines and perfect growing conditions."
+    },
+    {
+      "id": 9,
+      "title": "Forest Retreat",
+      "location": "Portland, Oregon",
+      "landType": "Recreational",
+      "price": 275000,
+      "size": 8.9,
+      "image": "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Wooded paradise with trails, creek, and abundant wildlife."
+    },
+    {
+      "id": 10,
+      "title": "City Center Plot",
+      "location": "Chicago, Illinois",
+      "landType": "Commercial",
+      "price": 920000,
+      "size": 0.4,
+      "image": "https://images.unsplash.com/photo-1494522855154-9297ac14b55f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "High-traffic location perfect for retail or mixed-use development."
+    },
+    {
+      "id": 11,
+      "title": "Riverside Acreage",
+      "location": "Nashville, Tennessee",
+      "landType": "Residential",
+      "price": 420000,
+      "size": 5.6,
+      "image": "https://images.unsplash.com/photo-1572731105204-9a921228bb13?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Scenic property along a gentle river with building sites set back from flood plain."
+    },
+    {
+      "id": 12,
+      "title": "Warehouse District Lot",
+      "location": "Cleveland, Ohio",
+      "landType": "Industrial",
+      "price": 340000,
+      "size": 2.1,
+      "image": "https://images.unsplash.com/photo-1556156653-e5a7676c3ec8?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+      "description": "Redevelopment opportunity in upcoming warehouse district."
+    }
+  ]

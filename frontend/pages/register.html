@@ -27,18 +27,25 @@
         }
         .form-group {
             margin-bottom: 15px;
+            text-align: left;
         }
         label {
             display: block;
             margin-bottom: 5px;
             color: #555;
         }
-        input {
+        input, select {
             width: 100%;
             padding: 8px;
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
+        }
+        .error {
+            color: red;
+            font-size: 12px;
+            display: none;
+            margin-top: 5px;
         }
         button {
             padding: 10px 20px;
@@ -48,7 +55,11 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        button:hover {
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        button:hover:not(:disabled) {
             background-color: #0056b3;
         }
     </style>
@@ -60,40 +71,206 @@
         <div class="form-group">
             <label for="name">Name</label>
             <input type="text" id="name" name="name" required>
+            <span class="error" id="name-error">Name is required</span>
         </div>
         <div class="form-group">
             <label for="username">Username</label>
             <input type="text" id="username" name="username" required>
+            <span class="error" id="username-error">Username is required</span>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" required>
+            <span class="error" id="email-error">Invalid email format</span>
         </div>
         <div class="form-group">
             <label for="password">Password</label>
             <input type="password" id="password" name="password" required>
+            <span class="error" id="password-error">Password must be at least 6 characters</span>
         </div>
-        <button type="submit">Register</button>
+        <div class="form-group">
+            <label for="aadhaarNumber">Aadhaar Number</label>
+            <input type="text" id="aadhaarNumber" name="aadhaarNumber" required>
+            <span class="error" id="aadhaarNumber-error">Must be a 12-digit number</span>
+        </div>
+        <div class="form-group">
+            <label for="panNumber">PAN Number</label>
+            <input type="text" id="panNumber" name="panNumber" required>
+            <span class="error" id="panNumber-error">Must be in format ABCDE1234F</span>
+        </div>
+        <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <input type="text" id="phoneNumber" name="phoneNumber" required>
+            <span class="error" id="phoneNumber-error">Must be a 10-digit number starting with 6-9</span>
+        </div>
+        <div class="form-group">
+            <label for="addressLine1">Address Line 1</label>
+            <input type="text" id="addressLine1" name="address.line1" required>
+            <span class="error" id="addressLine1-error">Address Line 1 is required</span>
+        </div>
+        <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city" name="address.city" required>
+            <span class="error" id="city-error">City is required</span>
+        </div>
+        <div class="form-group">
+            <label for="state">State</label>
+            <input type="text" id="state" name="address.state" required>
+            <span class="error" id="state-error">State is required</span>
+        </div>
+        <div class="form-group">
+            <label for="pincode">Pincode</label>
+            <input type="text" id="pincode" name="address.pincode" required>
+            <span class="error" id="pincode-error">Must be a 6-digit number</span>
+        </div>
+        <div class="form-group">
+            <label for="dateOfBirth">Date of Birth</label>
+            <input type="date" id="dateOfBirth" name="dateOfBirth" required>
+            <span class="error" id="dateOfBirth-error">Must be a valid date (18+ years old)</span>
+        </div>
+        <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+            <span class="error" id="gender-error">Gender is required</span>
+        </div>
+        <div class="form-group">
+            <label for="fatherName">Father's Name</label>
+            <input type="text" id="fatherName" name="fatherName" required>
+            <span class="error" id="fatherName-error">Father's name is required</span>
+        </div>
+        <div class="form-group">
+            <label for="occupation">Occupation (Optional)</label>
+            <input type="text" id="occupation" name="occupation">
+        </div>
+        <button type="submit" id="submitBtn" disabled>Register</button>
     </form>
 </div>
 
 <script>
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-        e.preventDefault(); // Prevent page reload
+    // Regex patterns from userSchema
+    const validators = {
+        email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+        aadhaarNumber: /^\d{12}$/,
+        panNumber: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+        phoneNumber: /^[6-9]\d{9}$/,
+        pincode: /^\d{6}$/,
+    };
 
-        const name = document.getElementById('name').value;
-        const username = document.getElementById('username').value;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+    // Function to calculate age from date of birth
+    function calculateAge(dob) {
+        const birthDate = new Date(dob);
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age;
+    }
 
-        const response = await fetch('/api/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, username, email, password }),
+    // Function to validate a field and show/hide error
+    function validateField(input, regex, errorElement, customMessage, customCheck) {
+        const value = input.value.trim();
+        const isValid = customCheck ? customCheck(value) : (regex ? regex.test(value) : value.length > 0);
+        errorElement.style.display = isValid ? 'none' : 'block';
+        if (customMessage && !isValid) {
+            errorElement.textContent = customMessage;
+        }
+        return isValid;
+    }
+
+    // Get all inputs and their error elements
+    const inputs = document.querySelectorAll('input, select');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Validate all fields and enable/disable submit button
+    function validateForm() {
+        const validations = [
+            validateField(document.getElementById('name'), null, document.getElementById('name-error')),
+            validateField(document.getElementById('username'), null, document.getElementById('username-error')),
+            validateField(document.getElementById('email'), validators.email, document.getElementById('email-error')),
+            validateField(document.getElementById('password'), null, document.getElementById('password-error'),
+                'Password must be at least 6 characters', value => value.length >= 6),
+            validateField(document.getElementById('aadhaarNumber'), validators.aadhaarNumber, document.getElementById('aadhaarNumber-error')),
+            validateField(document.getElementById('panNumber'), validators.panNumber, document.getElementById('panNumber-error')),
+            validateField(document.getElementById('phoneNumber'), validators.phoneNumber, document.getElementById('phoneNumber-error')),
+            validateField(document.getElementById('addressLine1'), null, document.getElementById('addressLine1-error')),
+            validateField(document.getElementById('city'), null, document.getElementById('city-error')),
+            validateField(document.getElementById('state'), null, document.getElementById('state-error')),
+            validateField(document.getElementById('pincode'), validators.pincode, document.getElementById('pincode-error')),
+            validateField(document.getElementById('dateOfBirth'), null, document.getElementById('dateOfBirth-error'),
+                'Must be a valid date (18+ years old)', value => calculateAge(value) >= 18),
+            validateField(document.getElementById('gender'), null, document.getElementById('gender-error')),
+            validateField(document.getElementById('fatherName'), null, document.getElementById('fatherName-error')),
+        ];
+
+        const isFormValid = validations.every(valid => valid);
+        submitBtn.disabled = !isFormValid;
+    }
+
+    // Add real-time validation on input change
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            const errorElement = document.getElementById(`${input.id}-error`);
+            if (input.id === 'email') {
+                validateField(input, validators.email, errorElement);
+            } else if (input.id === 'aadhaarNumber') {
+                validateField(input, validators.aadhaarNumber, errorElement);
+            } else if (input.id === 'panNumber') {
+                validateField(input, validators.panNumber, errorElement);
+            } else if (input.id === 'phoneNumber') {
+                validateField(input, validators.phoneNumber, errorElement);
+            } else if (input.id === 'pincode') {
+                validateField(input, validators.pincode, errorElement);
+            } else if (input.id === 'password') {
+                validateField(input, null, errorElement, 'Password must be at least 6 characters', value => value.length >= 6);
+            } else if (input.id === 'dateOfBirth') {
+                validateField(input, null, errorElement, 'Must be a valid date (18+ years old)', value => calculateAge(value) >= 18);
+            } else {
+                validateField(input, null, errorElement);
+            }
+            validateForm(); // Re-check entire form to update submit button
         });
+    });
 
-        const result = await response.json();
-        alert(result.message); // Show success or error message
+    // Form submission
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData);
+        data.address = {
+            line1: data['address.line1'],
+            city: data['address.city'],
+            state: data['address.state'],
+            pincode: data['address.pincode'],
+        };
+        delete data['address.line1'];
+        delete data['address.city'];
+        delete data['address.state'];
+        delete data['address.pincode'];
+
+        try {
+            const response = await fetch('/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+            const result = await response.json();
+            if (response.ok) {
+                alert(result.message);
+            } else if (result.errors) {
+                alert(`Registration failed:\n${result.errors.map(err => `${err.field}: ${err.message}`).join('\n')}`);
+            } else {
+                alert(result.message);
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            alert('Failed to connect to server');
+        }
     });
 </script>
 </body>
