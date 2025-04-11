@@ -10,6 +10,7 @@ import { logoutUser } from './logout.js'; // Function to handle user logout
 import { isAuthenticated } from './auth.js'; // Middleware to check if a user is authenticated
 import cookieParser from 'cookie-parser'; // Middleware to parse cookies
 import { registerLand } from './register-land.js';
+import { getProfile, getUserLands, logout } from './profile.js';
 
 // Initialize the Express application
 const app = express();
@@ -104,6 +105,15 @@ app.get('/logout', logoutUser); // Calls logoutUser function to clear session/co
 app.get('/register-land', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'register-land.html'));
 });
+// Serve profile.html
+app.get('/profile', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'profile.html'));
+});
+
+// New profile routes
+app.get('/api/user/profile', isAuthenticated, getProfile); // Get user profile
+app.get('/api/user/lands', isAuthenticated, getUserLands); // Get user's lands
+app.post('/api/logout', isAuthenticated, logout);          // Logout user
 
 // API endpoints for user authentication
 // Endpoint: Register a new user

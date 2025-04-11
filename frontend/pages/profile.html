@@ -1,0 +1,229 @@
+<!-- Declare the document type as HTML5 -->
+<!DOCTYPE html>
+<!-- Define the HTML element with English language -->
+<html lang="en">
+<head>
+    <!-- Set character encoding to UTF-8 for universal compatibility -->
+    <meta charset="UTF-8" />
+    <!-- Ensure responsive design by setting viewport to device width -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Set the page title displayed in the browser tab -->
+    <title>User Profile</title>
+    <!-- Internal CSS for styling the profile page -->
+    <style>
+        /* Set default font and background for the entire page */
+        body {
+            font-family: Arial, sans-serif; /* Clean, readable font */
+            display: flex; /* Use flexbox for centering */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            min-height: 100vh; /* Full viewport height minimum */
+            margin: 0; /* Remove default margins */
+            background-color: #f4f4f4; /* Light gray background */
+        }
+        /* Style the main container for the profile */
+        .container {
+            background-color: #fff; /* White background */
+            padding: 40px; /* Inner spacing */
+            border-radius: 10px; /* Rounded corners */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+            width: 100%; /* Full width up to max */
+            max-width: 800px; /* Limit width */
+            text-align: center; /* Center text */
+        }
+        /* Style the heading */
+        h1 {
+            color: #333; /* Dark gray text */
+            margin-bottom: 20px; /* Space below heading */
+        }
+        /* Style section headings */
+        h2 {
+            color: #555; /* Medium gray text */
+            margin: 20px 0 10px; /* Space around heading */
+        }
+        /* Style user details section */
+        .user-details {
+            margin-bottom: 30px; /* Space below section */
+            text-align: left; /* Left-align text */
+        }
+        /* Style individual detail items */
+        .user-details p {
+            margin: 10px 0; /* Space between items */
+            font-size: 16px; /* Readable size */
+        }
+        /* Style bold labels in details */
+        .user-details p strong {
+            color: #333; /* Darker text for labels */
+        }
+        /* Style the lands list */
+        .lands-list {
+            text-align: left; /* Left-align list */
+        }
+        /* Style individual land items */
+        .land-item {
+            border: 1px solid #ddd; /* Light gray border */
+            border-radius: 4px; /* Rounded corners */
+            padding: 15px; /* Inner spacing */
+            margin-bottom: 15px; /* Space between items */
+            background-color: #fafafa; /* Very light gray background */
+        }
+        /* Style land item details */
+        .land-item p {
+            margin: 5px 0; /* Space between details */
+        }
+        /* Style buttons */
+        button {
+            padding: 10px 20px; /* Comfortable padding */
+            background-color: #007bff; /* Blue background */
+            color: #fff; /* White text */
+            border: none; /* No border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer; /* Pointer on hover */
+            margin-top: 20px; /* Space above */
+        }
+        /* Style button hover */
+        button:hover {
+            background-color: #0056b3; /* Darker blue */
+        }
+        /* Style error or success messages */
+        .message {
+            margin-top: 15px; /* Space above */
+            padding: 10px; /* Inner spacing */
+            border-radius: 4px; /* Rounded corners */
+            text-align: center; /* Center text */
+        }
+        /* Style success messages */
+        .message.success {
+            background-color: #d4edda; /* Light green */
+            color: #155724; /* Dark green */
+        }
+        /* Style error messages */
+        .message.error {
+            background-color: #f8d7da; /* Light red */
+            color: #721c24; /* Dark red */
+        }
+    </style>
+</head>
+<body>
+<!-- Main container for the profile page -->
+<div class="container">
+    <!-- Heading for the profile -->
+    <h1>User Profile</h1>
+    <!-- Section for user details -->
+    <div class="user-details" id="userDetails">
+        <!-- User details will be populated here by JavaScript -->
+    </div>
+    <!-- Section for registered lands -->
+    <h2>Your Registered Lands</h2>
+    <div class="lands-list" id="landsList">
+        <!-- Land items will be populated here by JavaScript -->
+    </div>
+    <!-- Logout button -->
+    <button id="logoutBtn">Logout</button>
+    <!-- Div to display messages -->
+    <div id="message" class="message"></div>
+</div>
+<!-- Internal JavaScript for fetching and displaying data -->
+<script>
+    // Function to fetch and display user profile
+    async function loadProfile() {
+        const messageDiv = document.getElementById('message');
+        const userDetailsDiv = document.getElementById('userDetails');
+        const landsListDiv = document.getElementById('landsList');
+
+        try {
+            // Fetch user details from the server
+            const userResponse = await fetch('/api/user/profile', {
+                method: 'GET',
+                credentials: 'include', // Include cookies for authentication
+            });
+            const userResult = await userResponse.json();
+
+            if (!userResponse.ok) {
+                throw new Error(userResult.message || 'Failed to load user profile');
+            }
+
+            // Populate user details
+            userDetailsDiv.innerHTML = `
+            <p><strong>Name:</strong> ${userResult.user.name}</p>
+            <p><strong>Email:</strong> ${userResult.user.email}</p>
+            <p><strong>Phone Number:</strong> ${userResult.user.phoneNumber}</p>
+            <p><strong>Aadhaar Number:</strong> ${userResult.user.aadhaarNumber}</p>
+            <p><strong>PAN Number:</strong> ${userResult.user.panNumber}</p>
+            <p><strong>Address:</strong> ${userResult.user.address}</p>
+            <p><strong>Date of Birth:</strong> ${userResult.user.dateOfBirth}</p>
+            <p><strong>Nationality:</strong> ${userResult.user.nationality}</p>
+            <p><strong>Gender:</strong> ${userResult.user.gender}</p>
+            <p><strong>Father's Name:</strong> ${userResult.user.fatherName}</p>
+            <p><strong>Occupation:</strong> ${userResult.user.occupation}</p>
+        `;
+
+            // Fetch user's registered lands
+            const landsResponse = await fetch('/api/user/lands', {
+                method: 'GET',
+                credentials: 'include', // Include cookies for authentication
+            });
+            const landsResult = await landsResponse.json();
+
+            if (!landsResponse.ok) {
+                throw new Error(landsResult.message || 'Failed to load lands');
+            }
+
+            // Populate lands list
+            if (landsResult.lands.length === 0) {
+                landsListDiv.innerHTML = '<p>No lands registered yet.</p>';
+            } else {
+                landsListDiv.innerHTML = landsResult.lands.map(land => `
+            <div class="land-item">
+              <p><strong>Title:</strong> ${land.title}</p>
+              <p><strong>Description:</strong> ${land.description}</p>
+              <p><strong>Location:</strong> ${land.location.address}, ${land.location.city}, ${land.location.state} - ${land.location.pincode}</p>
+              <p><strong>Area:</strong> ${land.area.value} ${land.area.unit}</p>
+              <p><strong>Property Type:</strong> ${land.propertyType}</p>
+              <p><strong>Documents:</strong> ${land.documentIds.join(', ')}</p>
+              ${land.saleDescription ? `<p><strong>Sale Description:</strong> ${land.saleDescription}</p>` : ''}
+              ${land.images.length > 0 ? `<p><strong>Images:</strong> ${land.images.join(', ')}</p>` : ''}
+            </div>
+          `).join('');
+            }
+        } catch (error) {
+            // Display error message
+            messageDiv.className = 'message error';
+            messageDiv.textContent = error.message;
+            console.error('Profile load error:', error);
+        }
+    }
+
+    // Function to handle logout
+    async function handleLogout() {
+        const messageDiv = document.getElementById('message');
+        try {
+            // Send logout request to server
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                credentials: 'include', // Include cookies for authentication
+            });
+            const result = await response.json();
+
+            if (response.ok) {
+                messageDiv.className = 'message success';
+                messageDiv.textContent = result.message || 'Logged out successfully';
+                setTimeout(() => (window.location.href = '/login'), 1000); // Redirect to login after 1s
+            } else {
+                throw new Error(result.message || 'Logout failed');
+            }
+        } catch (error) {
+            messageDiv.className = 'message error';
+            messageDiv.textContent = error.message;
+            console.error('Logout error:', error);
+        }
+    }
+
+    // Load profile data when page loads
+    document.addEventListener('DOMContentLoaded', loadProfile);
+
+    // Add logout button event listener
+    document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+</script>
+</body>
+</html>
