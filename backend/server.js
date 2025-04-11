@@ -97,6 +97,11 @@ app.get('/buyer', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages', 'buyer.html'));
 });
 
+app.get('/seller', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'seller.html'));
+});
+
+
 // Route: Handle user logout
 app.get('/logout', logoutUser); // Calls logoutUser function to clear session/cookies
 
