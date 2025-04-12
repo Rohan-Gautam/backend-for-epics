@@ -2,17 +2,19 @@ import express from 'express';
 import mongoose from 'mongoose';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import session from 'express-session'; // Add session management
+import session from 'express-session';
 import { registerUser } from './register.js';
 import { loginUser } from './login.js';
-import { logoutUser } from './logout.js'; // Import logoutUser
-import { isAuthenticated } from './auth.js'; // Import authentication middleware
-import { isGovtAuthenticated, restrictToGovernment } from './govt-auth.js'; // Import government authentication middleware
+import { logoutUser } from './logout.js';
+import { isAuthenticated } from './auth.js';
+import { isGovtAuthenticated, restrictToGovernment } from './govt-auth.js';
 import cookieParser from 'cookie-parser';
 import govtEmpRoutes from './govt-emp.js';
 
 const app = express();
-app.use(cookieParser('your-secret-key')); // Cookie parser with a secret key for signed cookies
+const SECRET_KEY = 'your-secret-key'; // In production, use environment variable
+
+app.use(cookieParser(SECRET_KEY));
 
 const PORT = 5001;
 
@@ -22,60 +24,42 @@ const __dirname = path.dirname(__filename);
 const MONGO_URI = 'mongodb://localhost:27017/landRegistrationDB';
 
 // Middleware
-app.use('/assets', express.static(path.join(__dirname, '../frontend/assets'))); // Serve static assets
-app.use(express.json()); // Parse JSON bodies
+app.use('/assets', express.static(path.join(__dirname, '../frontend/assets')));
+app.use(express.json());
 app.use(
     session({
-        secret: 'your-secret-key', // Replace with an environment variable in production (e.g., process.env.SESSION_SECRET)
+        secret: SECRET_KEY,
         resave: false,
-        saveUninitialized: false,
-        cookie: { secure: false }, // Set to true if using HTTPS
+        saveUninitialized: true,
+        cookie: { secure: false }
     })
 );
 
-// Serve static files but restrict direct access to certain pages
-app.use(express.static(path.join(__dirname, '../frontend'), {
-    index: false, // Disable directory indexing
-    setHeaders: (res, filePath) => {
-        if (filePath.endsWith('home.html')) {
-            res.status(403).send('Forbidden'); // Prevent direct access to home.html without authentication
-        }
-        if (filePath.endsWith('Govt-verification.html')) {
-            res.status(403).send('Forbidden'); // Prevent direct access to Govt-verification.html
-        }
-    },
-}));
+// Log all requests for debugging
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
 
 // MongoDB Connection
 mongoose.connect(MONGO_URI)
     .then(() => console.log("Connected to MongoDB"))
     .catch((err) => console.error("Failed to connect:", err));
 
-// Routes
+// Serve static files - Basic routes that don't need protection
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages', 'index.html')); // Landing page
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'index.html'));
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages', 'login.html')); // Login page
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'login.html'));
 });
 
 app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages', 'register.html')); // Registration page
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'register.html'));
 });
 
-app.get('/home', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages', 'home.html')); // Protected home page
-});
-
-//for buyer
-app.get('/buyer', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend/pages', 'buyer.html'));
-});
-
-app.get('/logout', logoutUser); // Add logout route
-
-// Government routes with authentication
+// Government login and registration pages (public access)
 app.get('/pages/Government/Govt-login.html', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages/Government', 'Govt-login.html'));
 });
@@ -84,16 +68,44 @@ app.get('/pages/Government/Govt-emp-register.html', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages/Government', 'Govt-emp-register.html'));
 });
 
-// Government verification page with proper authentication
-app.get('/pages/Government/Govt-verification.html', isGovtAuthenticated, restrictToGovernment, (req, res) => {
+// Protected routes - Regular users
+app.get('/home', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'home.html'));
+});
+
+app.get('/buyer', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/pages', 'buyer.html'));
+});
+
+// Protected routes - Government employees only
+app.get('/pages/Government/Govt-verification.html', isGovtAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/pages/Government', 'Govt-verification.html'));
 });
 
-// API Endpoints
-app.post('/register', registerUser); // Register a new user
-app.post('/login', loginUser); // Login an existing user
+// Serve other static files but with protection against direct access to sensitive pages
+app.use(express.static(path.join(__dirname, '../frontend'), {
+    index: false,
+    setHeaders: (res, filePath) => {
+        // Prevent direct access to protected pages
+        if (filePath.endsWith('home.html') || filePath.endsWith('Govt-verification.html')) {
+            res.status(403).send('Forbidden: Authentication required');
+        }
+    },
+}));
 
+// API routes
+app.post('/register', registerUser);
+app.post('/login', loginUser);
+app.get('/logout', logoutUser);
+
+// Government employee routes
 app.use(govtEmpRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error('Server error:', err);
+    res.status(500).send('Internal Server Error');
+});
 
 // Start Server
 app.listen(PORT, () => {

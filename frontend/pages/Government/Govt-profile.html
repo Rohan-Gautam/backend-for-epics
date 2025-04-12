@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Profile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eaf4fc;
+        }
+        header {
+            background-color: #0078D7;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #333;
+        }
+        .profile-details {
+            margin-bottom: 2rem;
+        }
+        .profile-details p {
+            margin: 0.5rem 0;
+            color: #555;
+        }
+        .history {
+            margin-top: 2rem;
+        }
+        .history table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .history th, .history td {
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        .history th {
+            background-color: #0078D7;
+            color: white;
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background-color: #0078D7;
+            color: white;
+            text-align: center;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        .btn:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Employee Profile</h1>
+        <p>View your details and approval history</p>
+    </header>
+    <div class="container">
+        <div class="profile-details">
+            <h2>Personal Details</h2>
+            <p><strong>Employee ID:</strong> <span id="empId"></span></p>
+            <p><strong>Name:</strong> <span id="name"></span></p>
+            <p><strong>Email:</strong> <span id="email"></span></p>
+            <p><strong>Department:</strong> <span id="department"></span></p>
+        </div>
+        <div class="history">
+            <h2>Approval History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Request ID</th>
+                        <th>Type</th>
+                        <th>Property</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table"></tbody>
+            </table>
+        </div>
+        <a href="/pages/Government/Govt-verification.html" class="btn">Back to Verification</a>
+    </div>
+
+    <script>
+        async function loadProfile() {
+            try {
+                const response = await fetch('/api/employee/profile', {
+                    headers: { 'Authorization': document.cookie.split('auth=')[1] }
+                });
+                const profile = await response.json();
+                document.getElementById('empId').textContent = profile.empId;
+                document.getElementById('name').textContent = profile.name;
+                document.getElementById('email').textContent = profile.email;
+                document.getElementById('department').textContent = profile.department;
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                alert('Failed to load profile.');
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/employee/history', {
+                    headers: { 'Authorization': document.cookie.split('auth=')[1] }
+                });
+                const history = await response.json();
+                const tableBody = document.getElementById('history-table');
+                tableBody.innerHTML = '';
+                history.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${item.requestId}</td>
+                        <td>${item.type}</td>
+                        <td>${item.property.address}</td>
+                        <td>${item.status}</td>
+                        <td>${new Date(item.date).toLocaleDateString()}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading history:', error);
+                alert('Failed to load history.');
+            }
+        }
+
+        // Initial load
+        loadProfile();
+        loadHistory();
+    </script>
+</body>
+</html>

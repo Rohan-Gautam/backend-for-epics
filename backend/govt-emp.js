@@ -1,3 +1,5 @@
+// First, let's fix the govt-emp.js file to ensure it exports both the router and the model
+
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import express from 'express';
@@ -43,7 +45,6 @@ router.post('/govt-emp-register', async (req, res) => {
 });
 
 // Login Government Employee
-// Login Government Employee
 router.post('/govt-emp-login', async (req, res) => {
     const { email, password } = req.body;
 
@@ -59,7 +60,7 @@ router.post('/govt-emp-login', async (req, res) => {
         }
 
         // Set session data
-        req.session.userRole = employee.role;
+        req.session.userRole = 'government';
         
         // Set authentication cookie
         res.cookie('auth', employee._id.toString(), { 
@@ -67,6 +68,9 @@ router.post('/govt-emp-login', async (req, res) => {
             httpOnly: true, 
             maxAge: 24 * 60 * 60 * 1000 // 1 day expiry
         });
+
+        // For debugging
+        console.log('Login successful for employee:', employee._id.toString());
 
         res.status(200).json({ 
             message: 'Login successful', 
@@ -78,4 +82,7 @@ router.post('/govt-emp-login', async (req, res) => {
         res.status(500).json({ message: 'Server error during login' });
     }
 });
+
+// Export both the router and the model
+export { GovtEmployee };
 export default router;
